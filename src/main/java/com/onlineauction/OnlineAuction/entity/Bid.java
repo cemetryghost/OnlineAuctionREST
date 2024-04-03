@@ -19,11 +19,11 @@ public class Bid {
     private Long idbids;
 
     @ManyToOne
-    @JoinColumn(name = "lot_id")
+    @JoinColumn(name = "lot_id", nullable = false)
     private Lot lot;
 
     @ManyToOne
-    @JoinColumn(name = "buyer_id")
+    @JoinColumn(name = "buyer_id", nullable = false)
     private UserAccounts buyer;
 
     private BigDecimal bidAmount;

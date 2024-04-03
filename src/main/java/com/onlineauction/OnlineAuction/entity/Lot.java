@@ -24,6 +24,7 @@ public class Lot {
     private String descriptionLots;
     @Column(nullable = false)
     private BigDecimal startPrice;
+    @Column(nullable = false)
     private BigDecimal currentPrice;
     @Column(nullable = false)
     private BigDecimal stepPrice;

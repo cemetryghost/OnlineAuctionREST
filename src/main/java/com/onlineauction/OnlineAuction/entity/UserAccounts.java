@@ -26,7 +26,7 @@ public class UserAccounts {
     @Column(nullable = false)
     private String surname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String login;
 
     @Column(nullable = false)
@@ -42,4 +42,5 @@ public class UserAccounts {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
+
 }
