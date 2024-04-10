@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Продавец - Auction.ru</title>
+</head>
+<body>
+    <header>
+        <h1>Auction.ru</h1>
+        <nav>
+            <ul>
+                <li th:text="'Привет, ' + ${#authentication.name} + '!'"></li>
+                <li><a th:href="@{/logout}">Выход</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div th:if="${#authorization.expression('hasRole(''SELLER'')')}">
+        <h2>Мои лоты</h2>
+    </div>
+
+</body>
+</html>

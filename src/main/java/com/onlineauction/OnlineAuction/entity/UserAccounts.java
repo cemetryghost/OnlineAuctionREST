@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "users")
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 public class UserAccounts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idusers;
+    private Long id;
 
     @Column(nullable = false)
     private String name;

@@ -11,7 +11,8 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class RegistrationDTO {
+public class UserDTO {
+    private Long id;
     @NotBlank(message = "Name cannot be empty")
     private String name;
 

@@ -1,38 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <title>Регистрация</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 400px;
+            background-color: #e9ecef;
         }
 
         .registration-container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
         }
 
         .registration-container h2 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #007bff;
+            margin-bottom: 30px;
+            color: #6c757d;
         }
 
         .form-group label {
-            font-weight: bold;
+            font-weight: 600;
+            color: #495057;
         }
 
         .btn-primary {
             width: 100%;
-            border-radius: 10px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            font-size: 18px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .form-check-label {
+            margin-left: 10px;
+            font-weight: 500;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -59,7 +75,7 @@
             </div>
             <div class="form-group">
                 <label for="birth_date">Дата рождения:</label>
-                <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                <input type="text" class="form-control" id="birth_date" name="birth_date" required placeholder="Выберите дату">
             </div>
             <div class="form-group">
                 <label>Роль:</label><br>
@@ -79,6 +95,15 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
     $(document).ready(function() {
+        flatpickr("#birth_date", {
+            dateFormat: "Y-m-d",
+            "locale": "ru",
+            maxDate: "today",
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+        });
+
         $('#registrationForm').on('submit', function(e) {
             e.preventDefault();
 

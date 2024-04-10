@@ -1,5 +1,6 @@
 package com.onlineauction.OnlineAuction.entity;
 
+import com.onlineauction.OnlineAuction.enums.StatusLot;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.time.LocalDate;
 
 @Entity
@@ -17,14 +19,13 @@ import java.time.LocalDate;
 public class Lot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idlots;
+    private Long id;
     @Column(nullable = false)
     private String nameLots;
     @Column(nullable = false)
     private String descriptionLots;
     @Column(nullable = false)
     private BigDecimal startPrice;
-    @Column(nullable = false)
     private BigDecimal currentPrice;
     @Column(nullable = false)
     private BigDecimal stepPrice;
@@ -34,19 +35,25 @@ public class Lot {
     private LocalDate closingDate;
     @Column(nullable = false)
     private String conditionLots;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String statusLots;
+    private StatusLot statusLots;
+
+    @Lob
+    private byte[] image;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private UserAccounts seller;
+    @JoinColumn(name = "seller_id", nullable = false)
+    private UserAccounts sellerId;
 
-    @ManyToOne
-    @JoinColumn(name = "current_buyer_id")
-    private UserAccounts currentBuyer;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "current_buyer_id", nullable = true)
+    private UserAccounts currentBuyerId;
+
 }
 
