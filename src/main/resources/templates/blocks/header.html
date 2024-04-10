@@ -14,13 +14,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item" th:if="${role == 'ROLE_ADMIN'}">
-                <a class="nav-link" href="/lots">Лоты</a>
+                <a class="nav-link" href="#" onclick="loadLots()">Лоты</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_ADMIN'}">
-                <a class="nav-link" href="/categories">Категории</a>
+                <a class="nav-link" href="#" onclick="loadCategoryPage()">Категории</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_ADMIN'}">
-                <a class="nav-link" href="/user">Аккаунты</a>
+                <a class="nav-link" href="#" onclick="loadUsers()">Аккаунты</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_SELLER'}">
                 <a class="nav-link" href="/lots">Мои лоты</a>

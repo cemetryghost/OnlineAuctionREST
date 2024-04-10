@@ -1,6 +1,7 @@
 package com.onlineauction.OnlineAuction.service;
 
 import com.onlineauction.OnlineAuction.dto.LotDTO;
+import com.onlineauction.OnlineAuction.enums.StatusLot;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,4 +15,5 @@ public interface LotService {
     void deleteLot(Long id);
     void uploadImage(Long lotId, MultipartFile file) throws IOException;
     List<LotDTO> getLotsByCategoryId(Long categoryId);
+    LotDTO updateLotStatus(Long id, StatusLot newStatus);
 }

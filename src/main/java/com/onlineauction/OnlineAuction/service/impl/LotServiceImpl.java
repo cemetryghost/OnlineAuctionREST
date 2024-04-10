@@ -6,6 +6,7 @@ import com.onlineauction.OnlineAuction.entity.Category;
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.Role;
+import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.mapper.LotMapper;
 import com.onlineauction.OnlineAuction.repository.CategoryRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
@@ -99,13 +100,12 @@ public class LotServiceImpl implements LotService {
             throw new IllegalStateException("Cannot update lot with a current buyer");
         }
 
-        existingLot.setNameLots(lotDTO.getNameLots());
-        existingLot.setDescriptionLots(lotDTO.getDescriptionLots());
-        existingLot.setStartPrice(lotDTO.getStartPrice());
-        existingLot.setStepPrice(lotDTO.getStepPrice());
-        existingLot.setCurrentPrice(lotDTO.getCurrentPrice());
-        existingLot.setClosingDate(lotDTO.getClosingDate());
-        existingLot.setConditionLots(lotDTO.getConditionLots());
+        if (lotDTO.getNameLots() != null) existingLot.setNameLots(lotDTO.getNameLots());
+        if (lotDTO.getDescriptionLots() != null) existingLot.setDescriptionLots(lotDTO.getDescriptionLots());
+        if (lotDTO.getStartPrice() != null) existingLot.setStartPrice(lotDTO.getStartPrice());
+        if (lotDTO.getStepPrice() != null) existingLot.setStepPrice(lotDTO.getStepPrice());
+        if (lotDTO.getClosingDate() != null) existingLot.setClosingDate(lotDTO.getClosingDate());
+        if (lotDTO.getConditionLots() != null) existingLot.setConditionLots(lotDTO.getConditionLots());
 
         if (lotDTO.getCategoryId() != null) {
             Category category = categoryRepository.findById(lotDTO.getCategoryId())
@@ -147,5 +147,18 @@ public class LotServiceImpl implements LotService {
         return lotRepository.findByCategoryIdId(categoryId).stream()
                 .map(lotMapper::lotToLotDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public LotDTO updateLotStatus(Long id, StatusLot newStatus) {
+        Lot existingLot = lotRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Lot not found with id: " + id));
+
+        if (newStatus == null) {
+            throw new IllegalArgumentException("New status cannot be null");
+        }
+        existingLot.setStatusLots(newStatus);
+        existingLot = lotRepository.save(existingLot);
+        return lotMapper.lotToLotDTO(existingLot);
     }
 }

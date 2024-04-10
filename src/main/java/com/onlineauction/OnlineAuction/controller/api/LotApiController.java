@@ -2,6 +2,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Lot;
+import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,4 +88,10 @@ public class LotApiController {
         return ResponseEntity.ok(lotDTOS);
     }
 
+    // Добавление нового метода для изменения статуса лота
+    @PutMapping("/{id}/status")
+    public ResponseEntity<LotDTO> updateLotStatus(@PathVariable Long id, @RequestParam StatusLot newStatus) {
+        LotDTO updatedLot = lotService.updateLotStatus(id, newStatus);
+        return updatedLot != null ? ResponseEntity.ok(updatedLot) : ResponseEntity.notFound().build();
+    }
 }

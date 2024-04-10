@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список лотов</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Добавим тень для карточек */
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px); /* Добавим небольшую анимацию при наведении */
+        }
+        .card-img-top {
+            max-height: 300px; /* Увеличим высоту изображения */
+            object-fit: cover;
+        }
+        .card-title {
+            font-size: 1.5rem; /* Увеличим размер заголовка */
+        }
+        .card-text {
+            font-size: 1rem; /* Уменьшим размер обычного текста */
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Список лотов</h2>
+    <div class="row" id="lotsContainer">
+        <!-- Карточки лотов будут добавлены сюда -->
+    </div>
+</div>
+
+<!-- Модальное окно для отображения и редактирования подробной информации о лоте -->
+<div class="modal fade" id="lotDetailsModal" tabindex="-1" role="dialog" aria-labelledby="lotDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lotDetailsModalLabel">Подробная информация о лоте</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="lotDetailsBody">
+            </div>
+            <div class="modal-footer">
+                <!-- Кнопки управления: изменение статуса, редактирование, удаление -->
+                <select class="custom-select" id="newStatusSelect" style="margin-right: 10px;">
+                    <option value="AWAITING_CONFIRMATION_LOT">Ожидает подтверждения</option>
+                    <option value="ACTIVE_LOT">Активный</option>
+                    <option value="COMPLETED_LOT">Завершен</option>
+                </select>
+                <button type="button" class="btn btn-success" id="updateStatusButton">Изменить статус</button>
+                <button type="button" class="btn btn-info" id="editLotButton">Редактировать лот</button>
+                <button type="button" class="btn btn-danger" id="deleteLotButton">Удалить лот</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editLotForm" style="display: none;">
+    <form>
+        <div class="form-group">
+            <label for="editLotName">Наименование лота</label>
+            <input type="text" class="form-control" id="editLotName" name="name">
+        </div>
+        <div class="form-group">
+            <label for="editLotDescription">Описание лота</label>
+            <textarea class="form-control" id="editLotDescription" name="description"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="saveEditedLot">Сохранить изменения</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    var lots = [];
+    var currentLotId;
+
+    function showLotDetails(lotId) {
+        var lot = lots.find(function(item) { return item.id === lotId; });
+        currentLotId = lotId; // Сохраняем ID текущего лота
+
+        if (lot) {
+            $.getJSON('/category/' + lot.categoryId, function(category) {
+                var modalBody = $('#lotDetailsBody');
+                modalBody.html('<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : 'placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
+                    '<p><strong>Наименование:</strong> ' + lot.nameLots + '</p>' +
+                    '<p><strong>Категория:</strong> ' + category.nameCategory + '</p>' +
+                    '<p><strong>Описание:</strong> ' + lot.descriptionLots + '</p>' +
+                    '<p><strong>Стартовая цена:</strong> ' + lot.startPrice + '</p>' +
+                    '<p><strong>Текущая цена:</strong> ' + lot.currentPrice + '</p>' +
+                    '<p><strong>Шаг цены:</strong> ' + lot.stepPrice + '</p>' +
+                    '<p><strong>Дата публикации:</strong> ' + lot.publicationDate + '</p>' +
+                    '<p><strong>Дата закрытия:</strong> ' + lot.closingDate + '</p>' +
+                    '<p><strong>Состояние:</strong> ' + lot.conditionLots + '</p>' +
+                    '<p><strong>Статус:</strong> ' + lot.statusLots + '</p>');
+
+                $('#lotDetailsModal').modal('show');
+            });
+        }
+    }
+
+    $('#deleteLotButton').click(function() {
+        if (confirm('Вы уверены, что хотите удалить этот лот?')) {
+            $.ajax({
+                url: '/lots/' + currentLotId,
+                method: 'DELETE',
+                success: function(response) {
+                    alert('Лот успешно удален');
+                    $('#lotDetailsModal').modal('hide');
+                },
+                error: function() {
+                    alert('Ошибка при удалении лота');
+                }
+            }).always(function() {
+                // Это гарантирует, что оверлей будет убран в любом случае
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                loadLots(); // Обновляем список лотов
+            });
+        }
+    });
+
+    $(document).ready(function() {
+        loadLots();
+
+        // Функция для сброса состояния модального окна
+        function resetModal() {
+            // Показываем все кнопки
+            $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
+            // Удаляем форму редактирования, если она есть
+            $('#editLotForm').remove();
+            // Очищаем тело модального окна для следующего использования
+            $('#lotDetailsBody').empty();
+        }
+
+        // При закрытии модального окна сбрасываем его состояние
+        $('#lotDetailsModal').on('hidden.bs.modal', function() {
+            resetModal();
+        });
+
+        $(document).on('click', '#backToDetails', function() {
+            $('#editLotForm').remove();
+            showLotDetails(currentLotId);
+            $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
+        });
+
+        $('#editLotButton').click(function() {
+            var lot = lots.find(function(item) { return item.id === currentLotId; });
+            if (!lot) return;
+
+            var editFormHtml = `
+            <div id="editLotForm">
+                <form>
+                    <div class="form-group">
+                        <label for="editLotName">Наименование лота</label>
+                        <input type="text" class="form-control" id="editLotName" name="name" value="${lot.nameLots}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLotDescription">Описание лота</label>
+                        <textarea class="form-control" id="editLotDescription" name="description">${lot.descriptionLots}</textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="saveEditedLot">Сохранить изменения</button>
+                    <button type="button" class="btn btn-secondary" id="backToDetails">Назад</button>
+                </form>
+            </div>
+        `;
+
+            $('#lotDetailsBody').html(editFormHtml);
+            $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').hide();
+        });
+
+
+    $('#updateStatusButton').click(function() {
+        var newStatus = $('#newStatusSelect').val();
+        $.ajax({
+            url: '/lots/' + currentLotId + '/status',
+            method: 'PUT',
+            data: { newStatus: newStatus },
+            success: function(response) {
+                $('#lotDetailsModal').modal('hide');
+                loadLots(); // Перезагружаем список лотов
+            },
+            error: function() {
+                alert('Ошибка при обновлении статуса лота');
+            }
+        });
+    });
+
+    function loadLots() {
+        $.getJSON('/lots', function(data) {
+            lots = data;
+            var lotsContainer = $('#lotsContainer');
+            lotsContainer.empty(); // Очищаем контейнер
+
+            lots.forEach(function(lot) {
+                var statusText = '';
+                switch(lot.statusLots) {
+                    case 'AWAITING_CONFIRMATION_LOT':
+                        statusText = 'Ожидает подтверждения';
+                        break;
+                    case 'ACTIVE_LOT':
+                        statusText = 'Активный';
+                        break;
+                    case 'COMPLETED_LOT':
+                        statusText = 'Завершен';
+                        break;
+                }
+
+                var cardHtml = '<div class="col-md-4">' +
+                    '<div class="card">' +
+                    '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : 'placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
+                    '<div class="card-body">' +
+                    '<h5 class="card-title">' + lot.nameLots + '</h5>' +
+                    '<p class="card-text">' + lot.descriptionLots + '</p>' +
+                    '<p class="card-text">Текущая цена: ' + lot.currentPrice + '</p>' +
+                    '<p class="card-text">Статус: ' + statusText + '</p>' +
+                    '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+
+                lotsContainer.append(cardHtml);
+            });
+        });
+    }
+
+    $(document).on('click', '#saveEditedLot', function() {
+        var updatedLot = {
+            nameLots: $('#editLotName').val(),
+            descriptionLots: $('#editLotDescription').val(),
+            // Здесь можно добавить другие поля, которые были изменены
+        };
+
+        $.ajax({
+            url: '/lots/' + currentLotId,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(updatedLot),
+            success: function(response) {
+                alert('Лот успешно обновлен');
+                $('#lotDetailsModal').modal('hide');
+                loadLots(); // Обновляем список лотов
+            },
+            error: function() {
+                alert('Ошибка при сохранении изменений лота');
+            }
+        });
+    });
+
+    $('#lotDetailsModal').on('hidden.bs.modal', function (e) {
+        loadLots(); // Обновляем список лотов
+        $('#lotDetailsBody').empty();
+        $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
+    });
+
+    $(document).ready(function() {
+        loadLots();
+    })})
+</script>
+</body>
+</html>

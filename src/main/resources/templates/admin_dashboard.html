@@ -2,35 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Dashboard</title>
-    <!-- Подключаем Bootstrap и Thymeleaf layout dialect -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div th:replace="blocks/header"></div>
 
-<div class="container mt-3">
-    <h2>Categories</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Здесь будут отображаться данные о категориях -->
-        <tr th:each="category : ${categories}">
-            <td th:text="${category.id}"></td>
-            <td th:text="${category.name}"></td>
-            <td>
-                <a th:href="@{'/category/' + ${category.id}}" class="btn btn-primary">Edit</a>
-                <button class="btn btn-danger deleteCategoryBtn" data-category-id="${category.id}">Delete</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<div id="content"/></div>
+
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function loadCategoryPage() {
+        $('#content').load('/categories');
+    }
+    function loadUsers() {
+        $('#content').load('/accounts');
+    }
+    function loadLots(){
+        $('#content').load('/products')
+    }
+
+</script>
 </body>
 </html>

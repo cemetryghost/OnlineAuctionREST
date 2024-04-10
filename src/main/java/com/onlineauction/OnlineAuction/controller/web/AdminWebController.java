@@ -1,6 +1,8 @@
 package com.onlineauction.OnlineAuction.controller.web;
 
 import com.onlineauction.OnlineAuction.dto.CategoryDTO;
+import com.onlineauction.OnlineAuction.dto.LotDTO;
+import com.onlineauction.OnlineAuction.dto.UserDTO;
 import com.onlineauction.OnlineAuction.service.CategoryService;
 import com.onlineauction.OnlineAuction.service.UserService;
 import org.springframework.security.core.Authentication;
@@ -34,10 +36,24 @@ public class AdminWebController {
     }
 
     @GetMapping("/categories")
-    public String getAllCategories(Model model) {
+    public String getAllCategories(Model model, Authentication authentication) {
         List<CategoryDTO> categoryDTOList = categoryService.getAllCategories();
         model.addAttribute("categories", categoryDTOList);
         return "categories";
+    }
+
+    @GetMapping("/products")
+    public String getAllProducts(Model model) {
+        List<LotDTO> lotDTOList = lotService.getAllLots();
+        model.addAttribute("products", lotDTOList);
+        return "products";
+    }
+
+    @GetMapping("/accounts")
+    public String getAllAccounts(Model model) {
+        List<UserDTO> userDTOList = userService.getAllUsers();
+        model.addAttribute("accounts", userDTOList);
+        return "accounts";
     }
 }
 

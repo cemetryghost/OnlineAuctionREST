@@ -1,29 +1,284 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Категории</title>
+    <title>Список категорий</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-weight: 600;
+            color: #555;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .btn-group > .btn {
+            margin-right: 10px;
+        }
+        .btn-group > .btn:last-child {
+            margin-right: 0;
+        }
+        .btn {
+            border: none;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #6c7ae0; /* New primary color */
+        }
+        .btn-primary:hover {
+            background: #5a6abe; /* Darker shade for hover state */
+        }
+        .btn-secondary {
+            background: #34495e; /* New secondary color */
+        }
+        .btn-secondary:hover {
+            background: #2c3e50; /* Darker shade for hover state */
+        }
+        .btn-danger {
+            background: #e06c75; /* New danger color */
+        }
+        .btn-danger:hover {
+            background: #c05560; /* Darker shade for hover state */
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        }
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2;
+        }
+        .table tbody tr:hover {
+            background-color: #eaeaea;
+        }
+        .modal-content {
+            border-radius: 12px;
+        }
+        .modal-header {
+            border-bottom: 1px solid #eeeeee;
+            background: #f8f9fa;
+        }
+        .modal-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .modal-footer {
+            border-top: 1px solid #eeeeee;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #cccccc;
+        }
+        .form-control:focus {
+            border-color: #6c7ae0;
+            box-shadow: 0 0 0 2px rgba(108, 122, 224, 0.25);
+        }
+        .close {
+            outline: none;
+        }
+    </style>
 </head>
 <body>
-<h1>Категории</h1>
-<table>
-    <tr>
-        <th>Имя категории</th>
-        <th>Действия</th>
-    </tr>
-    <tr th:each="category : ${categories}">
-        <td th:text="${category.nameCategory}">Имя категории</td>
-        <td>
-            <!-- Кнопка редактирования -->
-            <a th:href="@{/category/edit/{id}(id=${category.id})}">Редактировать</a>
-            <!-- Кнопка удаления -->
-            <a th:href="@{/category/delete/{id}(id=${category.id})}" onclick="return confirm('Вы уверены?');">Удалить</a>
-        </td>
-    </tr>
-</table>
+<div class="container">
+    <h2>Список категорий</h2>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal">Добавить категорию</button>
+        <button type="button" class="btn btn-secondary" id="editButton" disabled>Редактировать</button>
+        <button type="button" class="btn btn-danger" id="deleteButton" disabled>Удалить</button>
+    </div>
+    <table class="table table-striped" id="categoriesTable">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Название категории</th>
+        </tr>
+        </thead>
+        <tbody>
 
-<!-- Кнопка добавления -->
-<a href="@{/category/new}">Добавить новую категорию</a>
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно для добавления категории -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Добавить категорию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addCategoryForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="addNameCategory">Название категории</label>
+                        <input type="text" class="form-control" id="addNameCategory" name="nameCategory" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования категории -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Редактировать категорию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editCategoryForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editCategoryId" name="id">
+                    <div class="form-group">
+                        <label for="editNameCategory">Название категории</label>
+                        <input type="text" class="form-control" id="editNameCategory" name="nameCategory" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var selectedCategory = null;
+        function refreshCategoryList() {
+            $.ajax({
+                url: '/category',
+                method: 'GET',
+                success: function(categories) {
+                    var tableBody = $('#categoriesTable tbody');
+                    tableBody.empty();
+                    categories.forEach(function(category) {
+                        var row = $('<tr>').append($('<td>').text(category.nameCategory));
+                        row.on('click', function() {
+                            $('#categoriesTable tr').removeClass('table-primary');
+                            $(this).addClass('table-primary');
+                            selectedCategory = category;
+                            $('#editButton').prop('disabled', false);
+                            $('#deleteButton').prop('disabled', false);
+                        });
+                        tableBody.append(row);
+                    });
+                }
+            });
+        }
+
+        refreshCategoryList();
+
+        $('#addCategoryForm').submit(function(e) {
+            e.preventDefault();
+            var categoryName = $('#addNameCategory').val();
+            $.ajax({
+                url: '/category',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ nameCategory: categoryName }),
+                success: function() {
+                    $('#addCategoryModal').modal('hide');
+                    refreshCategoryList();
+                }
+            });
+        });
+
+        $('#editButton').click(function() {
+            if(selectedCategory) {
+                $('#editCategoryId').val(selectedCategory.id);
+                $('#editNameCategory').val(selectedCategory.nameCategory);
+                $('#editCategoryModal').modal('show');
+            }
+        });
+
+        $('#editCategoryForm').submit(function(e) {
+            e.preventDefault();
+            var categoryId = $('#editCategoryId').val();
+            var categoryName = $('#editNameCategory').val();
+            $.ajax({
+                url: '/category/' + categoryId,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ id: categoryId, nameCategory: categoryName }),
+                success: function() {
+                    $('#editCategoryModal').modal('hide');
+                    selectedCategory = null; // Сброс выбранной категории
+                    $('#editButton').prop('disabled', true);
+                    $('#deleteButton').prop('disabled', true);
+                    $('#categoriesTable tr').removeClass('table-primary'); // Удаление выделения
+                    refreshCategoryList();
+                }
+            });
+        });
+
+        $('#deleteButton').click(function() {
+            if(selectedCategory && confirm("Вы уверены, что хотите удалить эту категорию?")) {
+                $.ajax({
+                    url: '/category/' + selectedCategory.id,
+                    method: 'DELETE',
+                    success: function() {
+                        selectedCategory = null; // Сброс выбранной категории
+                        $('#editButton').prop('disabled', true);
+                        $('#deleteButton').prop('disabled', true);
+                        $('#categoriesTable tr').removeClass('table-primary'); // Удаление выделения
+                        refreshCategoryList();
+                    },
+                    error: function(xhr) {
+                        var errorMessage = xhr.responseText || "Произошла неизвестная ошибка.";
+                        if(xhr.responseText.includes("нарушает ограничение внешнего ключа")) {
+                            errorMessage = "Невозможно удалить категорию, так как она привязана к лоту.";
+                        }
+                        alert(errorMessage);
+                    }
+                });
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
