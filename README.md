@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-   ![png-transparent-auction-gavel-icon-auction-angle-internet-hammer-thumbnail](https://github.com/cemetryghost/OnlineAuctionWeb/assets/96484941/e0da508b-d13e-4d04-85dc-301364ca53f2) width="700" height="185">
+    ![Название изображения](./src/main/resources/image/png-transparent-auction-gavel-icon-auction-angle-internet-hammer-thumbnail.png)
   <h3 align="center">Онлайн аукцион</h3>
   <p align="center">
     Приложение для торговли
