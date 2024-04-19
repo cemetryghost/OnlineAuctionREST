@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO registerNewUser(UserDTO userDTO) {
         if (userRepository.existsByLogin(userDTO.getLogin())) {
-            throw new RuntimeException("Login already exists.");
+            throw new RuntimeException("Пользователь с таким логином уже сузествует");
         }
         userDTO.setStatus(Status.ACTIVE);
         UserAccounts user = userMapper.userDTOToUser(userDTO);
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         UserAccounts user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         return userMapper.userToUserDTO(user);
     }
 
@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(Long id, UserDTO userDTO) {
         UserAccounts existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        // Обновляем данные пользователя, исключая пароль
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         userMapper.updateUserFromDto(userDTO, existingUser);
         return userMapper.userToUserDTO(userRepository.save(existingUser));
     }
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void blockUser(Long id) {
         UserAccounts user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         user.setStatus(Status.BLOCKED);
         userRepository.save(user);
     }
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unblockUser(Long id) {
         UserAccounts user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         user.setStatus(Status.ACTIVE);
         userRepository.save(user);
     }

@@ -11,6 +11,7 @@ import com.onlineauction.OnlineAuction.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class BidServiceImpl implements BidService {
 
     private final BidRepository bidRepository;
@@ -61,7 +63,7 @@ public class BidServiceImpl implements BidService {
     @Override
     public BidDTO updateBid(Long id, BigDecimal newBidAmount) {
         Bid existingBid = bidRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Ставка с таким id не найдена: " + id));
 
         Lot lot = existingBid.getLot();
         BigDecimal currentPrice = lot.getCurrentPrice();
@@ -70,7 +72,7 @@ public class BidServiceImpl implements BidService {
         BigDecimal newBidTotalAmount = currentPrice.add(stepPrice);
 
         if (newBidAmount.compareTo(newBidTotalAmount) < 0) {
-            throw new IllegalArgumentException("New bid amount must be greater than or equal to the current bid amount plus the step price");
+            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шаг");
         }
 
         existingBid.setBidAmount(newBidTotalAmount);
@@ -82,7 +84,7 @@ public class BidServiceImpl implements BidService {
     @Override
     public void deleteBid(Long id) {
         bidRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Ставка с таким id не найдена: " + id));
 
         bidRepository.deleteById(id);
     }
@@ -93,19 +95,19 @@ public class BidServiceImpl implements BidService {
     public BidDTO placeBid(BidDTO bidDTO) {
         Optional<Lot> lotOptional = lotRepository.findById(bidDTO.getLotId());
         if (lotOptional.isEmpty()) {
-            throw new IllegalArgumentException("Lot not found");
+            throw new IllegalArgumentException("Лот не найден");
         }
         Lot lot = lotOptional.get();
 
         BigDecimal minimumBidAmount = lot.getCurrentPrice() != null ? lot.getCurrentPrice().add(lot.getStepPrice()) : lot.getStartPrice().add(lot.getStepPrice());
         if (bidDTO.getBidAmount().compareTo(minimumBidAmount) < 0) {
-            throw new IllegalArgumentException("Bid must be at least current or start price plus step price");
+            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шаг");
         }
 
         Bid bid = bidMapper.BidDTOtoBid(bidDTO);
         bid.setLot(lot);
         userRepository.findById(bidDTO.getBuyerId()).ifPresentOrElse(bid::setBuyer, () -> {
-            throw new IllegalArgumentException("Buyer not found");
+            throw new IllegalArgumentException("Покупатель не найден");
         });
 
         bid = bidRepository.save(bid);

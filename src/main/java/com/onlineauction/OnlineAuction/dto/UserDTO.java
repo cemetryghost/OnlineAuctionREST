@@ -13,24 +13,24 @@ import java.time.LocalDate;
 @Data
 public class UserDTO {
     private Long id;
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Имя не может быть пустым")
     private String name;
 
-    @NotBlank(message = "Surname cannot be empty")
+    @NotBlank(message = "Фамилия не может быть пустой")
     private String surname;
 
-    @NotBlank(message = "Login cannot be empty")
+    @NotBlank(message = "Логин не может быть пустым")
     private String login;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "Пароль не может быть пустым")
+    @Size(min = 8, message = "Пароль должен быть равен 8 символам или более")
     private String password;
 
-    @NotNull(message = "Birth date cannot be empty")
-    @Past(message = "Birth date must be in the past")
+    @NotNull(message = "Дата рождения не может быть пустрой")
+    @Past(message = "Дата рождения должна быть в прошлом")
     private LocalDate birth_date;
 
-    @NotNull(message = "Role cannot be empty")
+    @NotNull(message = "Роль не может быть пустой")
     private Role role;
 
     private Status status;

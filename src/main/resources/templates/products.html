@@ -7,33 +7,87 @@
     <style>
         .card {
             margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Добавим тень для карточек */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
         .card:hover {
-            transform: translateY(-5px); /* Добавим небольшую анимацию при наведении */
+            transform: translateY(-5px);
         }
         .card-img-top {
-            max-height: 300px; /* Увеличим высоту изображения */
-            object-fit: cover;
+            height: 200px;
+            width: auto;
+            object-fit: contain;
         }
         .card-title {
-            font-size: 1.5rem; /* Увеличим размер заголовка */
+            font-size: 1.5rem;
         }
         .card-text {
-            font-size: 1rem; /* Уменьшим размер обычного текста */
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
 <div class="container mt-3">
     <h2>Список лотов</h2>
+    <button type="button" id="addLotButton" class="btn btn-success mb-3" style="display: none;">Добавить лот</button>
     <div class="row" id="lotsContainer">
-        <!-- Карточки лотов будут добавлены сюда -->
+
     </div>
 </div>
 
-<!-- Модальное окно для отображения и редактирования подробной информации о лоте -->
+<div class="modal fade" id="lotModal" tabindex="-1" role="dialog" aria-labelledby="lotModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lotModalLabel">Лот</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="lotForm">
+                    <input type="hidden" id="lotId">
+                    <div class="form-group">
+                        <label for="nameLots">Наименование лота</label>
+                        <input type="text" class="form-control" id="nameLots" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descriptionLots">Описание лота</label>
+                        <textarea class="form-control" id="descriptionLots" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="startPrice">Стартовая цена</label>
+                        <input type="number" class="form-control" id="startPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stepPrice">Шаг цены</label>
+                        <input type="number" class="form-control" id="stepPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="closingDate">Дата закрытия</label>
+                        <input type="date" class="form-control" id="closingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="conditionLots">Состояние</label>
+                        <input type="text" class="form-control" id="conditionLots" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Категория</label>
+                        <select class="form-control" id="category" required>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lotImage">Изображение лота</label>
+                        <input type="file" class="form-control-file" id="lotImage">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="lotDetailsModal" tabindex="-1" role="dialog" aria-labelledby="lotDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -45,16 +99,7 @@
             </div>
             <div class="modal-body" id="lotDetailsBody">
             </div>
-            <div class="modal-footer">
-                <!-- Кнопки управления: изменение статуса, редактирование, удаление -->
-                <select class="custom-select" id="newStatusSelect" style="margin-right: 10px;">
-                    <option value="AWAITING_CONFIRMATION_LOT">Ожидает подтверждения</option>
-                    <option value="ACTIVE_LOT">Активный</option>
-                    <option value="COMPLETED_LOT">Завершен</option>
-                </select>
-                <button type="button" class="btn btn-success" id="updateStatusButton">Изменить статус</button>
-                <button type="button" class="btn btn-info" id="editLotButton">Редактировать лот</button>
-                <button type="button" class="btn btn-danger" id="deleteLotButton">Удалить лот</button>
+            <div class="modal-footer" id="lotDetailsFooter">
             </div>
         </div>
     </div>
@@ -70,197 +115,389 @@
             <label for="editLotDescription">Описание лота</label>
             <textarea class="form-control" id="editLotDescription" name="description"></textarea>
         </div>
+        <div class="form-group">
+            <label for="editLotStartPrice">Стартовая цена</label>
+            <input type="number" class="form-control" id="editLotStartPrice" name="startPrice">
+        </div>
+        <div class="form-group">
+            <label for="editLotStepPrice">Шаг цены</label>
+            <input type="number" class="form-control" id="editLotStepPrice" name="stepPrice">
+        </div>
+        <div class="form-group">
+            <label for="editLotClosingDate">Дата закрытия</label>
+            <input type="date" class="form-control" id="editLotClosingDate" name="closingDate">
+        </div>
+        <div class="form-group">
+            <label for="editLotCondition">Состояние</label>
+            <input type="text" class="form-control" id="editLotCondition" name="condition">
+        </div>
+        <div class="form-group">
+            <label for="editLotImage">Изображение лота</label>
+            <input type="file" class="form-control-file" id="editLotImage" name="image">
+        </div>
         <button type="button" class="btn btn-primary" id="saveEditedLot">Сохранить изменения</button>
+        <button type="button" class="btn btn-secondary" id="backToDetails">Назад</button>
     </form>
+</div>
+
+<div class="modal fade" id="confirmCompleteLotModal" tabindex="-1" role="dialog" aria-labelledby="confirmCompleteLotModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmCompleteLotModalLabel">Подтверждение завершения лота</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите завершить этот лот досрочно?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="confirmCompleteLot">Подтвердить</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
+
+    var statusTranslations = {
+        'AWAITING_CONFIRMATION_LOT': 'Ожидает подтверждения',
+        'ACTIVE_LOT': 'Активный',
+        'COMPLETED_LOT': 'Завершен'
+    };
+
     var lots = [];
     var currentLotId;
+    var userRole = "[[${role}]]";
+
+    console.log(userRole)
 
     function showLotDetails(lotId) {
-        var lot = lots.find(function(item) { return item.id === lotId; });
-        currentLotId = lotId; // Сохраняем ID текущего лота
+        var lot = lots.find(function (item) {
+            return item.id === lotId;
+        });
+        currentLotId = lotId;
 
         if (lot) {
-            $.getJSON('/category/' + lot.categoryId, function(category) {
+            $.getJSON('/category/' + lot.categoryId, function (category) {
                 var modalBody = $('#lotDetailsBody');
-                modalBody.html('<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : 'placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
+                modalBody.html('<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
                     '<p><strong>Наименование:</strong> ' + lot.nameLots + '</p>' +
                     '<p><strong>Категория:</strong> ' + category.nameCategory + '</p>' +
                     '<p><strong>Описание:</strong> ' + lot.descriptionLots + '</p>' +
                     '<p><strong>Стартовая цена:</strong> ' + lot.startPrice + '</p>' +
-                    '<p><strong>Текущая цена:</strong> ' + lot.currentPrice + '</p>' +
+                    '<p<strong>Текущая цена:</strong> ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
                     '<p><strong>Шаг цены:</strong> ' + lot.stepPrice + '</p>' +
                     '<p><strong>Дата публикации:</strong> ' + lot.publicationDate + '</p>' +
                     '<p><strong>Дата закрытия:</strong> ' + lot.closingDate + '</p>' +
                     '<p><strong>Состояние:</strong> ' + lot.conditionLots + '</p>' +
-                    '<p><strong>Статус:</strong> ' + lot.statusLots + '</p>');
+                    '<p><strong>Статус:</strong> ' + statusTranslations[lot.statusLots] + '</p>');
+
+                var modalFooter = $('#lotDetailsFooter');
+                modalFooter.html('');
+                console.log(userRole)
+                if (userRole === 'ROLE_ADMIN') {
+                    modalFooter.append('<select class="custom-select" id="newStatusSelect" style="margin-right: 10px;">' +
+                        '<option value="AWAITING_CONFIRMATION_LOT">Ожидает подтверждения</option>' +
+                        '<option value="ACTIVE_LOT">Активный</option>' +
+                        '<option value="COMPLETED_LOT">Завершен</option>' +
+                        '</select>' +
+                        '<button type="button" class="btn btn-success" id="updateStatusButton">Изменить статус</button>' +
+                        '<button type="button" class="btn btn-info" id="editLotButton">Редактировать лот</button>' +
+                        '<button type="button" class="btn btn-danger" id="deleteLotButton">Удалить лот</button>');
+                } else if (userRole === 'ROLE_SELLER') {
+                    modalFooter.append('<button type="button" class="btn btn-primary" id="completeLotButton">Завершить лот</button>' +
+                        '<button type="button" class="btn btn-info" id="editLotButton">Редактировать лот</button>' +
+                        '<button type="button" class="btn btn-danger" id="deleteLotButton">Удалить лот</button>');
+                }
 
                 $('#lotDetailsModal').modal('show');
             });
         }
     }
 
-    $('#deleteLotButton').click(function() {
-        if (confirm('Вы уверены, что хотите удалить этот лот?')) {
-            $.ajax({
-                url: '/lots/' + currentLotId,
-                method: 'DELETE',
-                success: function(response) {
-                    alert('Лот успешно удален');
-                    $('#lotDetailsModal').modal('hide');
-                },
-                error: function() {
-                    alert('Ошибка при удалении лота');
-                }
-            }).always(function() {
-                // Это гарантирует, что оверлей будет убран в любом случае
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-                loadLots(); // Обновляем список лотов
+    function loadCategories() {
+        $.getJSON('/category', function(categories) {
+            var categorySelect = $('#category');
+            categorySelect.empty();
+
+            categorySelect.append($('<option>').val("").text("Выберите категорию").attr("disabled", true).attr("selected", true));
+
+            categories.forEach(function(category) {
+                var option = $('<option>').val(category.id).text(category.nameCategory);
+                categorySelect.append(option);
             });
+        }).fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log("Запрос не выполнен: " + err);
+        });
+    }
+
+    $(document).ready(function () {
+        loadCategories();
+
+        if (userRole === 'ROLE_SELLER') {
+            $('#addLotButton').show();
         }
-    });
 
-    $(document).ready(function() {
-        loadLots();
+        $('#addLotButton').click(function () {
+            loadCategories();
+            $('#lotModal').modal('show');
+        });
 
-        // Функция для сброса состояния модального окна
+        $('#lotModal form').submit(function(event) {
+            event.preventDefault();
+
+            var lotData = {
+                nameLots: $('#nameLots').val(),
+                descriptionLots: $('#descriptionLots').val(),
+                startPrice: $('#startPrice').val(),
+                stepPrice: $('#stepPrice').val(),
+                closingDate: $('#closingDate').val(),
+                conditionLots: $('#conditionLots').val(),
+                categoryId: $('#category').val(),
+            };
+
+            var formData = new FormData(this);
+            formData.append('lot', JSON.stringify(lotData));
+            formData.append('image', $('#lotImage')[0].files[0]);
+
+            $.ajax({
+                url: '/lots',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert('Лот успешно добавлен');
+                    $('#lotModal').modal('hide');
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ошибка при добавлении лота: ' + error);
+                    console.error('Статус ошибки: ' + xhr.status);
+                    console.error('Текст ошибки: ' + xhr.responseText);
+                    alert('Ошибка при добавлении лота. Подробности смотрите в консоли разработчика.');
+                }
+
+            });
+        });
+
+        console.log(userRole);
+
         function resetModal() {
-            // Показываем все кнопки
             $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
-            // Удаляем форму редактирования, если она есть
             $('#editLotForm').remove();
-            // Очищаем тело модального окна для следующего использования
             $('#lotDetailsBody').empty();
         }
 
-        // При закрытии модального окна сбрасываем его состояние
-        $('#lotDetailsModal').on('hidden.bs.modal', function() {
+        $('#lotDetailsModal').on('hidden.bs.modal', function () {
             resetModal();
         });
 
-        $(document).on('click', '#backToDetails', function() {
+        $(document).on('click', '#backToDetails', function () {
             $('#editLotForm').remove();
             showLotDetails(currentLotId);
             $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
         });
 
-        $('#editLotButton').click(function() {
-            var lot = lots.find(function(item) { return item.id === currentLotId; });
+        $(document).on('click', '#editLotButton', function () {
+            var lot = lots.find(function (item) {
+                return item.id === currentLotId;
+            });
             if (!lot) return;
 
             var editFormHtml = `
-            <div id="editLotForm">
-                <form>
-                    <div class="form-group">
-                        <label for="editLotName">Наименование лота</label>
-                        <input type="text" class="form-control" id="editLotName" name="name" value="${lot.nameLots}">
-                    </div>
-                    <div class="form-group">
-                        <label for="editLotDescription">Описание лота</label>
-                        <textarea class="form-control" id="editLotDescription" name="description">${lot.descriptionLots}</textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" id="saveEditedLot">Сохранить изменения</button>
-                    <button type="button" class="btn btn-secondary" id="backToDetails">Назад</button>
-                </form>
-            </div>
-        `;
+        <div id="editLotForm">
+            <form>
+                <div class="form-group">
+                    <label for="editLotName">Наименование лота</label>
+                    <input type="text" class="form-control" id="editLotName" name="name" value="${lot.nameLots}">
+                </div>
+                <div class="form-group">
+                    <label for="editLotDescription">Описание лота</label>
+                    <textarea class="form-control" id="editLotDescription" name="description">${lot.descriptionLots}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editLotStartPrice">Стартовая цена</label>
+                    <input type="number" class="form-control" id="editLotStartPrice" name="startPrice" value="${lot.startPrice}">
+                </div>
+                <div class="form-group">
+                    <label for="editLotStepPrice">Шаг цены</label>
+                    <input type="number" class="form-control" id="editLotStepPrice" name="stepPrice" value="${lot.stepPrice}">
+                </div>
+                <div class="form-group">
+                    <label for="editLotClosingDate">Дата закрытия</label>
+                    <input type="date" class="form-control" id="editLotClosingDate" name="closingDate" value="${lot.closingDate}">
+                </div>
+                <div class="form-group">
+                    <label for="editLotCondition">Состояние</label>
+                    <input type="text" class="form-control" id="editLotCondition" name="condition" value="${lot.conditionLots}">
+                </div>
+                <div class="form-group">
+                    <label for="editLotImage">Изображение лота</label>
+                    <input type="file" class="form-control-file" id="editLotImage" name="image">
+                </div>
+                <button type="button" class="btn btn-primary" id="saveEditedLot">Сохранить изменения</button>
+                <button type="button" class="btn btn-secondary" id="backToDetails">Назад</button>
+            </form>
+        </div>
+    `;
 
             $('#lotDetailsBody').html(editFormHtml);
             $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').hide();
         });
 
 
-    $('#updateStatusButton').click(function() {
-        var newStatus = $('#newStatusSelect').val();
-        $.ajax({
-            url: '/lots/' + currentLotId + '/status',
-            method: 'PUT',
-            data: { newStatus: newStatus },
-            success: function(response) {
-                $('#lotDetailsModal').modal('hide');
-                loadLots(); // Перезагружаем список лотов
-            },
-            error: function() {
-                alert('Ошибка при обновлении статуса лота');
-            }
-        });
-    });
-
-    function loadLots() {
-        $.getJSON('/lots', function(data) {
-            lots = data;
-            var lotsContainer = $('#lotsContainer');
-            lotsContainer.empty(); // Очищаем контейнер
-
-            lots.forEach(function(lot) {
-                var statusText = '';
-                switch(lot.statusLots) {
-                    case 'AWAITING_CONFIRMATION_LOT':
-                        statusText = 'Ожидает подтверждения';
-                        break;
-                    case 'ACTIVE_LOT':
-                        statusText = 'Активный';
-                        break;
-                    case 'COMPLETED_LOT':
-                        statusText = 'Завершен';
-                        break;
+        $(document).on('click', '#updateStatusButton', function () {
+            var newStatus = $('#newStatusSelect').val();
+            $.ajax({
+                url: '/lots/' + currentLotId + '/status',
+                method: 'PUT',
+                data: {newStatus: newStatus},
+                success: function (response) {
+                    $('#lotDetailsModal').modal('hide');
+                    loadLots();
+                },
+                error: function () {
+                    alert('Ошибка при обновлении статуса лота');
                 }
-
-                var cardHtml = '<div class="col-md-4">' +
-                    '<div class="card">' +
-                    '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : 'placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
-                    '<div class="card-body">' +
-                    '<h5 class="card-title">' + lot.nameLots + '</h5>' +
-                    '<p class="card-text">' + lot.descriptionLots + '</p>' +
-                    '<p class="card-text">Текущая цена: ' + lot.currentPrice + '</p>' +
-                    '<p class="card-text">Статус: ' + statusText + '</p>' +
-                    '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-
-                lotsContainer.append(cardHtml);
             });
         });
-    }
 
-    $(document).on('click', '#saveEditedLot', function() {
-        var updatedLot = {
-            nameLots: $('#editLotName').val(),
-            descriptionLots: $('#editLotDescription').val(),
-            // Здесь можно добавить другие поля, которые были изменены
-        };
+        $(document).on('click', '#completeLotButton', function () {
+            $('#lotDetailsModal').modal('hide');
+            $('#confirmCompleteLotModal').modal('show');
+        });
 
-        $.ajax({
-            url: '/lots/' + currentLotId,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(updatedLot),
-            success: function(response) {
-                alert('Лот успешно обновлен');
-                $('#lotDetailsModal').modal('hide');
-                loadLots(); // Обновляем список лотов
-            },
-            error: function() {
-                alert('Ошибка при сохранении изменений лота');
+        $(document).on('hidden.bs.modal', '#confirmCompleteLotModal', function () {
+            showLotDetails(currentLotId);
+        });
+
+        $(document).on('click', '#confirmCompleteLot', function () {
+            $.ajax({
+                url: '/lots/' + currentLotId + '/status',
+                method: 'PUT',
+                data: {newStatus: 'COMPLETED_LOT'},
+                success: function (response) {
+                    alert('Лот успешно завершен');
+                    $('#lotDetailsModal').modal('hide');
+                    loadLots();
+                },
+                error: function () {
+                    alert('Ошибка при завершении лота');
+                }
+            });
+            $('#confirmCompleteLotModal').modal('hide');
+        });
+
+
+        $(document).on('click', '#deleteLotButton', function () {
+            if (confirm('Вы уверены, что хотите удалить этот лот?')) {
+                $.ajax({
+                    url: '/lots/' + currentLotId,
+                    method: 'DELETE',
+                    success: function (response) {
+                        alert('Лот успешно удален');
+                        $('#lotDetailsModal').modal('hide');
+                    },
+                    error: function () {
+                        alert('Ошибка при удалении лота');
+                    }
+                }).always(function () {
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    loadLots();
+                });
             }
         });
-    });
 
-    $('#lotDetailsModal').on('hidden.bs.modal', function (e) {
-        loadLots(); // Обновляем список лотов
-        $('#lotDetailsBody').empty();
-        $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
-    });
+        function loadLots() {
+            var url = '/lots';
 
-    $(document).ready(function() {
-        loadLots();
-    })})
+            if (userRole === 'ROLE_ADMIN') {
+                url = '/lots';
+            } else if (userRole === 'ROLE_SELLER') {
+                url = '/lots/my';
+            }
+            console.log(userRole)
+
+            $.getJSON(url, function (data) {
+                lots = data;
+                var lotsContainer = $('#lotsContainer');
+                lotsContainer.empty();
+
+                lots.forEach(function (lot) {
+                    var statusText = statusTranslations[lot.statusLots] || lot.statusLots;
+
+                    var cardHtml = '<div class="col-md-4">' +
+                        '<div class="card">' +
+                        '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
+                        '<div class="card-body">' +
+                        '<h5 class="card-title">' + lot.nameLots + '</h5>' +
+                        '<p class="card-text">' + lot.descriptionLots + '</p>' +
+                        '<p class="card-text">Текущая цена: ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
+                        '<p class="card-text">Статус: ' + statusText + '</p>' +
+                        '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+
+                    lotsContainer.append(cardHtml);
+                });
+            });
+        }
+
+
+        $(document).on('click', '#saveEditedLot', function () {
+            var updatedLotData = {
+                nameLots: $('#editLotName').val(),
+                descriptionLots: $('#editLotDescription').val(),
+                startPrice: $('#editLotStartPrice').val(),
+                stepPrice: $('#editLotStepPrice').val(),
+                closingDate: $('#editLotClosingDate').val(),
+                conditionLots: $('#editLotCondition').val(),
+            };
+
+            var formData = new FormData();
+            formData.append('lot', JSON.stringify(updatedLotData));
+
+            var imageFile = $('#editLotImage')[0].files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            $.ajax({
+                url: '/lots/' + currentLotId,
+                method: 'PUT',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert('Лот успешно обновлен');
+                    $('#lotDetailsModal').modal('hide');
+                    loadLots();
+                },
+                error: function () {
+                    alert('Ошибка при сохранении изменений лота');
+                }
+            });
+        });
+
+        $('#lotDetailsModal').on('hidden.bs.modal', function (e) {
+            loadLots();
+            $('#lotDetailsBody').empty();
+            $('#newStatusSelect, #updateStatusButton, #editLotButton, #deleteLotButton').show();
+        });
+
+        $(document).ready(function () {
+            loadLots();
+        });
+    })
 </script>
 </body>
 </html>

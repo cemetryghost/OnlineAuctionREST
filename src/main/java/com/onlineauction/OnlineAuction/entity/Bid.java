@@ -26,6 +26,7 @@ public class Bid {
     @JoinColumn(name = "buyer_id", nullable = false)
     private UserAccounts buyer;
 
+    @Column(nullable = false)
     private BigDecimal bidAmount;
 }
 

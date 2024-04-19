@@ -14,5 +14,7 @@ public class BuyerWebController {
     public String buyerDashboard() {
         return "buyer_dashboard";
     }
+
+//    TODO: Сделать продавца! Срочно!
 }
 

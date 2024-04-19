@@ -15,7 +15,7 @@ public interface UserMapper {
     @Mapping(target = "role", source = "role")
     UserAccounts userDTOToUser(UserDTO userDTO);
 
-    @Mapping(target = "password", ignore = true) // Игнорирование пароля при маппинге обратно для безопасности
+    @Mapping(target = "password", ignore = true)
     UserDTO userToUserDTO(UserAccounts user);
 
     @Mapping(target = "password", ignore = true)

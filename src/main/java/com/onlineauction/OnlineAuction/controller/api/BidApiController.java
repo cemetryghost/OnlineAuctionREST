@@ -4,6 +4,7 @@ import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bids")
+@Validated
 public class BidApiController {
 
     private final BidService bidService;

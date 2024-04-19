@@ -1,6 +1,7 @@
 package com.onlineauction.OnlineAuction.service;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
+
 import java.util.List;
 
 public interface UserService {

@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Long> {
     List<Lot> findByCategoryIdId(Long categoryId);
+    List<Lot> findBySellerIdId(Long sellerId);
+    List<Lot> findBySellerId_Id(Long sellerId);
+
 }

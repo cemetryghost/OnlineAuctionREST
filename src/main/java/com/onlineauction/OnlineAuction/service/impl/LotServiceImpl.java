@@ -60,44 +60,51 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
-    public LotDTO createLot(LotDTO lotDTO) {
+    public LotDTO createLot(LotDTO lotDTO, MultipartFile image) throws IOException {
         String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
         UserAccounts user = userRepository.findByLogin(currentUserLogin);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("Пользователь не найден");
         }
+
+        lotDTO.setStatusLots(StatusLot.AWAITING_CONFIRMATION_LOT);
 
         if (!Role.SELLER.equals(user.getRole())) {
             if (lotDTO.getSellerId() == null) {
-                throw new IllegalArgumentException("Seller id must be provided for non-seller users");
+                throw new IllegalArgumentException("Идентификатор продавца должен быть предоставлен для пользователей, не являющихся продавцами");
             }
             userRepository.findById(lotDTO.getSellerId())
-                    .orElseThrow(() -> new IllegalArgumentException("Seller not found with id: " + lotDTO.getSellerId()));
+                    .orElseThrow(() -> new IllegalArgumentException("Продавец не найден по идентификатору: " + lotDTO.getSellerId()));
         } else {
             lotDTO.setSellerId(user.getId());
         }
         Lot lot = lotMapper.lotDTOToLot(lotDTO, mappingContext);
         lot.setPublicationDate(LocalDate.now());
         lot.setCategoryId(categoryRepository.findById(lotDTO.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + lotDTO.getCategoryId())));
+                .orElseThrow(() -> new IllegalArgumentException("Не найдена категория с таким id " + lotDTO.getCategoryId())));
         if (lotDTO.getCurrentBuyerId() != null) {
             UserAccounts currentBuyer = userRepository.findById(lotDTO.getCurrentBuyerId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + lotDTO.getCurrentBuyerId()));
+                    .orElseThrow(() -> new IllegalArgumentException("Не найден пользователь с таким id " + lotDTO.getCurrentBuyerId()));
             lot.setCurrentBuyerId(currentBuyer);
         } else {
             lot.setCurrentBuyerId(null);
         }
-        lot = lotRepository.save(lot);
-        return lotMapper.lotToLotDTO(lot);
+
+        if (image != null && !image.isEmpty()) {
+            byte[] imageBytes = image.getBytes();
+            lot.setImage(imageBytes);
+        }
+        Lot savedLot = lotRepository.save(lot);
+        return lotMapper.lotToLotDTO(savedLot);
     }
 
     @Override
-    public LotDTO updateLot(Long id, LotDTO lotDTO) {
+    public LotDTO updateLot(Long id, LotDTO lotDTO, MultipartFile image) throws IOException {
         Lot existingLot = lotRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Lot not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Лот с такми id не найден: " + id));
 
         if (existingLot.getCurrentBuyerId() != null) {
-            throw new IllegalStateException("Cannot update lot with a current buyer");
+            throw new IllegalStateException("Обновления лота запрещено, так как есть текущий покупатель");
         }
 
         if (lotDTO.getNameLots() != null) existingLot.setNameLots(lotDTO.getNameLots());
@@ -109,33 +116,32 @@ public class LotServiceImpl implements LotService {
 
         if (lotDTO.getCategoryId() != null) {
             Category category = categoryRepository.findById(lotDTO.getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + lotDTO.getCategoryId()));
+                    .orElseThrow(() -> new IllegalArgumentException("Категория с таким id не найдена" + lotDTO.getCategoryId()));
             existingLot.setCategoryId(category);
         }
 
-        if (lotDTO.getCurrentBuyerId() != null) {
-            UserAccounts currentBuyer = userRepository.findById(lotDTO.getCurrentBuyerId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + lotDTO.getCurrentBuyerId()));
-            existingLot.setCurrentBuyerId(currentBuyer);
+        if (image != null && !image.isEmpty()) {
+            byte[] imageBytes = image.getBytes();
+            existingLot.setImage(imageBytes);
         }
 
-        existingLot = lotRepository.save(existingLot);
+        lotRepository.save(existingLot);
         return lotMapper.lotToLotDTO(existingLot);
     }
 
     @Override
     public void deleteLot(Long id) {
         Lot lot = lotRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Lot not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Лот с такми id не найден: " + id));
 
         if (lot.getCurrentBuyerId() != null) {
-            throw new IllegalStateException("Cannot delete lot with a current buyer");
+            throw new IllegalStateException("Удвление лота запрещено, так как есть текущий покупатель");
         }
         lotRepository.deleteById(id);
     }
 
     public void uploadImage(Long lotId, MultipartFile file) throws IOException {
-        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new RuntimeException("Lot not found"));
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new RuntimeException("Лот не найден"));
         byte[] imageBytes = file.getBytes();
         lot.setImage(imageBytes);
         lotRepository.save(lot);
@@ -152,13 +158,32 @@ public class LotServiceImpl implements LotService {
     @Override
     public LotDTO updateLotStatus(Long id, StatusLot newStatus) {
         Lot existingLot = lotRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Lot not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Лот с таким id не найден: " + id));
 
         if (newStatus == null) {
-            throw new IllegalArgumentException("New status cannot be null");
+            throw new IllegalArgumentException("Новый статус не может быть пустым");
         }
         existingLot.setStatusLots(newStatus);
         existingLot = lotRepository.save(existingLot);
         return lotMapper.lotToLotDTO(existingLot);
+    }
+
+    @Transactional
+    @Override
+    public List<LotDTO> getLotsBySellerId(Long sellerId) {
+        return lotRepository.findBySellerIdId(sellerId).stream()
+                .map(lotMapper::lotToLotDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LotDTO> getLotsByCurrentSeller() {
+        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
+        UserAccounts seller = userRepository.findByLogin(currentUserLogin);
+        if (seller == null) {
+            throw new UsernameNotFoundException("Пользователь не найден");
+        }
+        List<Lot> lots = lotRepository.findBySellerId_Id(seller.getId());
+        return lots.stream().map(lotMapper::lotToLotDTO).collect(Collectors.toList());
     }
 }

@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Покупатель - Auction.ru</title>
-    <!-- Подключите здесь стили Bootstrap или другие стили, если нужно -->
 </head>
 <body>
 <header>
@@ -17,11 +16,7 @@
 
 <div th:if="${#authorization.expression('hasRole(''BUYER'')')}">
     <h2>Товары</h2>
-    <!-- Динамический список товаров с возможностью ставок -->
-    <!-- Детали товара и история ставок -->
 </div>
-
-<!-- Другой контент страницы -->
 
 </body>
 </html>

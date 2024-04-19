@@ -39,11 +39,11 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         UserAccounts userAccounts = userRepository.findByLogin(login);
         if (userAccounts == null) {
-            throw new UsernameNotFoundException("User not found with login: " + login);
+            throw new UsernameNotFoundException("Пользваоетль с таким логином не найден: " + login);
         }
 
         if (userAccounts.getStatus() == Status.BLOCKED) {
-            throw new LockedException("Your account is blocked");
+            throw new LockedException("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin123@gmail.com");
         }
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userAccounts.getRole().name());

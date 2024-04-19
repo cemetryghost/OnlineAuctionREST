@@ -8,10 +8,13 @@ import com.onlineauction.OnlineAuction.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -38,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         if(categoryRepository.existsByNameCategory(categoryDTO.getNameCategory())) {
-            throw new DataIntegrityViolationException("Category with name " + categoryDTO.getNameCategory() + " already exists.");
+            throw new DataIntegrityViolationException("Категория с именем " + categoryDTO.getNameCategory() + " уже существует");
         }
         Category category = categoryMapper.categoryDtoToCategory(categoryDTO);
         category = categoryRepository.save(category);
@@ -54,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
     public boolean updateCategoryName(Long id, String newName) {
         return categoryRepository.findById(id).map(category -> {
             if(categoryRepository.existsByNameCategory(newName)) {
-                throw new DataIntegrityViolationException("Category with name " + newName + " already exists.");
+                throw new DataIntegrityViolationException("Категория с именем " + newName + " уже существует");
             }
             category.setNameCategory(newName);
             categoryRepository.save(category);

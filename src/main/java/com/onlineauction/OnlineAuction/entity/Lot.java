@@ -51,8 +51,8 @@ public class Lot {
     @JoinColumn(name = "seller_id", nullable = false)
     private UserAccounts sellerId;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "current_buyer_id", nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "current_buyer_id")
     private UserAccounts currentBuyerId;
 
 }

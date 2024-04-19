@@ -44,7 +44,7 @@ public class CategoryApiController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategoryName(@Valid @PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
         if (categoryDTO.getNameCategory() == null || categoryDTO.getNameCategory().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Name category cannot be empty");
+            return ResponseEntity.badRequest().body("Имя категории не может быть пустым");
         }
         boolean updateResult = categoryService.updateCategoryName(id, categoryDTO.getNameCategory());
         return updateResult ?
