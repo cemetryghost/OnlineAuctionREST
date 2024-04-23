@@ -1,10 +1,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    ![Название изображения](./src/main/resources/image/png-transparent-auction-gavel-icon-auction-angle-internet-hammer-thumbnail.png)
+    <img src="src/main/resources/image/istockphoto-1368360794-612x612.jpg" width=400, height=400>
   <h3 align="center">Онлайн аукцион</h3>
   <p align="center">
-    Приложение для торговли
+    Платформа для торговли
 </div>
 
 <details>
@@ -42,38 +42,37 @@
 * Просмотр лотов и их деталей
 * Размещение ставок и др.
 ## Разработан при помощи
-* [![Java][Java.io]][Java-url] - язык программирования, на котором выполненена разработка.
-* [![MySQL Workbench][MySQL Workbench.io]][MySQL Workbench-url] - инструмент для визуального проектирования баз данных, интегрирующий проектирование, моделирование, создание и эксплуатацию БД в единое бесшовное окружение для системы баз данных MySQL.
-* [![JavaFX][JavaFX.io]][JavaFX-url] -  платформа на основе Java для создания приложений с насыщенным графическим интерфейсом.
-* [![SceneBuilder][SceneBuilder.io]][SceneBuilder-url] - это автономное приложение, которое генерирует разметку FXML.
+* [![Java](https://img.shields.io/badge/Java-yellow)](https://www.java.com/ru/) - язык программирования, на котором выполнена разработка.
+* [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-brightgreen)](https://spring.io/projects/spring-boot) - фреймворк для создания веб-приложений на языке Java.
+* [![Spring Security](https://img.shields.io/badge/Spring%20Security-green)](https://spring.io/projects/spring-security) - фреймворк аутентификации и авторизации для веб-приложений на языке Java.
+* [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-blue)](https://www.thymeleaf.org/) - шаблонизатор HTML для Java-приложений.
+* ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-lightgrey) - объектно-реляционная система управления базами данных.
+* [![JavaScript](https://img.shields.io/badge/JavaScript-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript) - язык программирования, используемый для создания интерактивных веб-страниц.
+* ![HTML](https://img.shields.io/badge/HTML-orange) - язык разметки веб-страниц.
+* ![CSS](https://img.shields.io/badge/CSS-blue) - каскадные таблицы стилей для оформления веб-страниц.
+* [![AJAX](https://img.shields.io/badge/AJAX-blue)](https://api.jquery.com/jQuery.ajax/) - технология обмена данными между веб-браузером и веб-сервером без перезагрузки страницы.
 ## Информация по установке
-Полную документацию по установке проекта можно просмотреть в [руководстве пользователя](https://github.com/cemetryghost/OnlineAuction/wiki/%2316.-%D0%A0%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+Полную документацию по установке проекта можно просмотреть в [руководстве пользователя](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2319.-%D0%A0%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
 ## Документация проекта
-Вся документация проекта находится в разделе [Wiki](https://github.com/cemetryghost/OnlineAuction/wiki)
-* [Техническое задание](https://github.com/cemetryghost/OnlineAuction/wiki/%2301.-%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5-%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5)
-* [Спецификация на ПО](https://github.com/cemetryghost/OnlineAuction/wiki/%2302.-%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F-%D0%BD%D0%B0-%D0%9F%D0%9E)
-* [Функциональные требование](https://github.com/cemetryghost/OnlineAuction/wiki/%2303.-%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5-%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
-* [Диаграмма вариантов использования](https://github.com/cemetryghost/OnlineAuction/wiki/%2304.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D0%BE%D0%B2-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
-* [Таблица описания прецедентов](https://github.com/cemetryghost/OnlineAuction/wiki/%2305.-%D0%A2%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D0%B0-%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D1%8F-%D0%BF%D1%80%D0%B5%D1%86%D0%B5%D0%B4%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
-* [Диаграмма классов](https://github.com/cemetryghost/OnlineAuction/wiki/%2306.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2)
-* [Диаграмма компонентов](https://github.com/cemetryghost/OnlineAuction/wiki/%2307.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
-* [Диаграмма последовательности действий](https://github.com/cemetryghost/OnlineAuction/wiki/%2308.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8-%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D0%B9)
-* [Диаграмма деятельности](https://github.com/cemetryghost/OnlineAuction/wiki/%2309.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8)
-* [Диаграмма кооперации](https://github.com/cemetryghost/OnlineAuction/wiki/%2310.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
-* [Диаграмма развертывания](https://github.com/cemetryghost/OnlineAuction/wiki/%2311.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D1%80%D0%B0%D0%B7%D0%B2%D0%B5%D1%80%D1%82%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
-* [Тестовый граф и пути](https://github.com/cemetryghost/OnlineAuction/wiki/%2312.-%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B9-%D0%B3%D1%80%D0%B0%D1%84-%D0%B8-%D0%BF%D1%83%D1%82%D0%B8)
-* [Тестовые сценарии](https://github.com/cemetryghost/OnlineAuction/wiki/%2313.-%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5-%D1%81%D1%86%D0%B5%D0%BD%D0%B0%D1%80%D0%B8%D0%B8)
-* [Unit тестирование](https://github.com/cemetryghost/OnlineAuction/wiki/%2314.-Unit-%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
-* [Логирование](https://github.com/cemetryghost/OnlineAuction/wiki/%2315.-%D0%9B%D0%BE%D0%B3%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
-* [Руководство пользователя](https://github.com/cemetryghost/OnlineAuction/wiki/%2316.-%D0%A0%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+Вся документация проекта находится в разделе [Wiki](https://github.com/cemetryghost/OnlineAuctionWeb/wiki)
+* [Техническое задание](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2301.-%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5-%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5)
+* [Спецификация на ПО](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2302.-%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F-%D0%BD%D0%B0-%D0%9F%D0%9E)
+* [Функциональные требование](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2303.-%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5-%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+* [Диаграмма вариантов использования](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2304.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D0%BE%D0%B2-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+* [Таблица описания прецедентов](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2305.-%D0%A2%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D0%B0-%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D1%8F-%D0%BF%D1%80%D0%B5%D1%86%D0%B5%D0%B4%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
+* [Диаграмма классов](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2306.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2)
+* [Диаграмма компонентов](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2307.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
+* [Диаграмма последовательности действий](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2308.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8-%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D0%B9)
+* [Диаграмма деятельности](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2309.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8)
+* [Диаграмма кооперации](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2310.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
+* [Диаграмма развертывания](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2311.-%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D1%80%D0%B0%D0%B7%D0%B2%D0%B5%D1%80%D1%82%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+* [Тестовый граф и пути](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2312.-%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B9-%D0%B3%D1%80%D0%B0%D1%84-%D0%B8-%D0%BF%D1%83%D1%82%D0%B8)
+* [Тестовые сценарии](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2313.-%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5-%D1%81%D1%86%D0%B5%D0%BD%D0%B0%D1%80%D0%B8%D0%B8)
+* [Unit тестирование](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2314.-Unit%E2%80%90%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+* [Инфологическая модель данных](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2315.-%D0%98%D0%BD%D1%84%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)
+* [Логическая модель данных](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2316.-%D0%9B%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)
+* [Физическая модель данных](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2317.-%D0%A4%D0%B8%D0%B7%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)
+* [Метрики кода](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2318.-%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8-%D0%BA%D0%BE%D0%B4%D0%B0)
+* [Руководство пользователя](https://github.com/cemetryghost/OnlineAuctionWeb/wiki/%2319.-%D0%A0%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
 ## Автор
 Разработчик-тестировщик - [Марусик Матвей](https://github.com/cemetryghost)
-
-[Java.io]: https://img.shields.io/badge/-Java-yellow
-[Java-url]: https://www.java.com/ru/
-[MySQL Workbench.io]: https://img.shields.io/badge/-MySQL%20Workbench-green
-[MySQL Workbench-url]: https://www.mysql.com/products/workbench/
-[JavaFX.io]: https://img.shields.io/badge/-JavaFX-lightgrey
-[JavaFX-url]: https://openjfx.io/
-[SceneBuilder.io]: https://img.shields.io/badge/-Scene%20Builder-blue
-[SceneBuilder-url]: https://gluonhq.com/products/scene-builder/
