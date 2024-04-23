@@ -417,14 +417,14 @@
         });
 
         function loadLots() {
-            var url = '/lots';
+            var url;
 
+            // Определите URL в зависимости от роли пользователя
             if (userRole === 'ROLE_ADMIN') {
                 url = '/lots';
             } else if (userRole === 'ROLE_SELLER') {
                 url = '/lots/my';
             }
-            console.log(userRole)
 
             $.getJSON(url, function (data) {
                 lots = data;
@@ -434,24 +434,25 @@
                 lots.forEach(function (lot) {
                     var statusText = statusTranslations[lot.statusLots] || lot.statusLots;
 
-                    var cardHtml = '<div class="col-md-4">' +
-                        '<div class="card">' +
-                        '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
-                        '<div class="card-body">' +
-                        '<h5 class="card-title">' + lot.nameLots + '</h5>' +
-                        '<p class="card-text">' + lot.descriptionLots + '</p>' +
-                        '<p class="card-text">Текущая цена: ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
-                        '<p class="card-text">Статус: ' + statusText + '</p>' +
-                        '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>';
+                    if ((userRole === 'ROLE_SELLER' && (lot.statusLots === 'AWAITING_CONFIRMATION_LOT' || lot.statusLots === 'ACTIVE_LOT')) || userRole === 'ROLE_ADMIN') {
+                        var cardHtml = '<div class="col-md-4">' +
+                            '<div class="card">' +
+                            '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
+                            '<div class="card-body">' +
+                            '<h5 class="card-title">' + lot.nameLots + '</h5>' +
+                            '<p class="card-text">' + lot.descriptionLots + '</p>' +
+                            '<p class="card-text">Текущая цена: ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
+                            '<p class="card-text">Статус: ' + statusText + '</p>' +
+                            '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
 
-                    lotsContainer.append(cardHtml);
+                        lotsContainer.append(cardHtml);
+                    }
                 });
             });
         }
-
 
         $(document).on('click', '#saveEditedLot', function () {
             var updatedLotData = {

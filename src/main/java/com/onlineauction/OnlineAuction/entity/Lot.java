@@ -19,6 +19,7 @@ import java.time.LocalDate;
 public class Lot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_lots")
     private Long id;
     @Column(nullable = false)
     private String nameLots;

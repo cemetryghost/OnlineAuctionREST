@@ -18,4 +18,7 @@ public interface LotService {
     LotDTO updateLotStatus(Long id, StatusLot newStatus);
     List<LotDTO> getLotsBySellerId(Long sellerId);
     List<LotDTO> getLotsByCurrentSeller();
+    List<LotDTO> getCompletedLotsBySellerId();
+    List<LotDTO> getActiveLots();
+    List<LotDTO> getActiveLotsByCategoryId(Long categoryId);
 }

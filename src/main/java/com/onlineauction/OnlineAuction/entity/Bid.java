@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_bids")
     private Long id;
 
     @ManyToOne

@@ -19,4 +19,12 @@ public class SellerWebController {
         return "seller_dashboard";
     }
 
+    @GetMapping("/completed_lots")
+    public String completedLots(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
+            model.addAttribute("login", authentication.getName());
+        }
+        return "completed_lots"; // Возвращаем имя HTML-шаблона для страницы завершенных лотов
+    }
 }

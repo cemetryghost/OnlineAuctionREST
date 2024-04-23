@@ -26,10 +26,10 @@
                 <a class="nav-link" href="#" onclick="loadLots()">Мои лоты</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_SELLER'}">
-                <a class="nav-link" href="/lots">Завершенные лоты</a>
+                <a class="nav-link" href="#" onclick="loadCompletedLots()">Завершенные лоты</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_BUYER'}">
-                <a class="nav-link" href="/lots">Лоты</a>
+                <a class="nav-link" href="#" onclick="loadActiveLots()">Активные лоты</a>
             </li>
             <li class="nav-item" th:if="${role == 'ROLE_BUYER'}">
                 <a class="nav-link" href="/lots">Участия</a>

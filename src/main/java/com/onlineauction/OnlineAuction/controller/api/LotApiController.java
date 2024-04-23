@@ -1,10 +1,10 @@
 package com.onlineauction.OnlineAuction.controller.api;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Lot;
+import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
@@ -140,4 +140,26 @@ public class LotApiController {
     public ResponseEntity<List<LotDTO>> getMyLots() {
         return ResponseEntity.ok(lotService.getLotsByCurrentSeller());
     }
+
+    @Transactional
+    @GetMapping("/my/completed")
+    public ResponseEntity<List<LotDTO>> getMyCompletedLots() {
+        List<LotDTO> completedLots = lotService.getCompletedLotsBySellerId();
+        return ResponseEntity.ok(completedLots);
+    }
+
+    @Transactional
+    @GetMapping("/active")
+    public ResponseEntity<List<LotDTO>> getActiveLots() {
+        List<LotDTO> activeLots = lotService.getActiveLots();
+        return ResponseEntity.ok(activeLots);
+    }
+
+    @Transactional
+    @GetMapping("/active/category/{categoryId}")
+    public ResponseEntity<List<LotDTO>> getActiveLotsByCategoryId(@PathVariable Long categoryId) {
+        List<LotDTO> activeLots = lotService.getActiveLotsByCategoryId(categoryId);
+        return ResponseEntity.ok(activeLots);
+    }
+
 }

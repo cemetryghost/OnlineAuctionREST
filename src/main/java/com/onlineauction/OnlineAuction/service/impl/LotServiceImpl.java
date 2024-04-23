@@ -186,4 +186,32 @@ public class LotServiceImpl implements LotService {
         List<Lot> lots = lotRepository.findBySellerId_Id(seller.getId());
         return lots.stream().map(lotMapper::lotToLotDTO).collect(Collectors.toList());
     }
+
+    @Override
+    public List<LotDTO> getCompletedLotsBySellerId() {
+        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
+        UserAccounts seller = userRepository.findByLogin(currentUserLogin);
+        if (seller == null) {
+            throw new UsernameNotFoundException("Пользователь не найден");
+        }
+        List<Lot> completedLots = lotRepository.findBySellerId_IdAndStatusLots(seller.getId(), StatusLot.COMPLETED_LOT);
+        return completedLots.stream()
+                .map(lotMapper::lotToLotDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LotDTO> getActiveLots() {
+        return lotRepository.findByStatusLots(StatusLot.ACTIVE_LOT).stream()
+                .map(lotMapper::lotToLotDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LotDTO> getActiveLotsByCategoryId(Long categoryId) {
+        return lotRepository.findByCategoryIdIdAndStatusLots(categoryId, StatusLot.ACTIVE_LOT).stream()
+                .map(lotMapper::lotToLotDTO)
+                .collect(Collectors.toList());
+    }
+
 }

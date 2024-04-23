@@ -3,12 +3,14 @@ package com.onlineauction.OnlineAuction.service.impl;
 import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.entity.Bid;
 import com.onlineauction.OnlineAuction.entity.Lot;
+import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.mapper.BidMapper;
 import com.onlineauction.OnlineAuction.repository.BidRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +37,9 @@ public class BidServiceImpl implements BidService {
         this.userRepository = userRepository;
         this.bidMapper = bidMapper;
     }
+
+    @Autowired
+    private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
     @Override
     public List<BidDTO> getAllBids() {
@@ -101,20 +106,31 @@ public class BidServiceImpl implements BidService {
 
         BigDecimal minimumBidAmount = lot.getCurrentPrice() != null ? lot.getCurrentPrice().add(lot.getStepPrice()) : lot.getStartPrice().add(lot.getStepPrice());
         if (bidDTO.getBidAmount().compareTo(minimumBidAmount) < 0) {
-            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шаг");
+            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага");
         }
 
+        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
+        UserAccounts buyer = userRepository.findByLogin(currentUserLogin);
+        if (buyer == null) {
+            throw new UsernameNotFoundException("Пользователь не найден");
+        }
+
+        // Создаем объект ставки и устанавливаем соответствующие значения
         Bid bid = bidMapper.BidDTOtoBid(bidDTO);
         bid.setLot(lot);
-        userRepository.findById(bidDTO.getBuyerId()).ifPresentOrElse(bid::setBuyer, () -> {
-            throw new IllegalArgumentException("Покупатель не найден");
-        });
+        bid.setBuyer(buyer);
 
+        // Сохраняем ставку
         bid = bidRepository.save(bid);
 
+        // Обновляем текущую цену и идентификатор текущего покупателя для лота
         lot.setCurrentPrice(bidDTO.getBidAmount());
-        lot.setCurrentBuyerId(bid.getBuyer());
+        lot.setCurrentBuyerId(buyer);
         lotRepository.save(lot);
+
+        // Возвращаем информацию о размещенной ставке
         return bidMapper.bidToBidDTO(bid);
     }
+
+
 }
