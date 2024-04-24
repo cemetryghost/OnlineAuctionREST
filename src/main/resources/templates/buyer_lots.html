@@ -59,7 +59,6 @@
     </div>
 </div>
 
-
 <script>
     var statusTranslations = {
         'AWAITING_CONFIRMATION_LOT': 'Ожидает подтверждения',
@@ -68,11 +67,9 @@
     };
 
     $(document).ready(function() {
-        loadCategories(); // Загрузка списка категорий при загрузке страницы
-        loadActiveLots(); // Загрузка всех активных лотов при загрузке страницы
+        loadCategories();
+        loadActiveLots();
 
-        // Обработчик клика на кнопку "Сделать ставку"
-        // Обработчик клика на кнопку "Сделать ставку"
         $('#lotDetailsModal').on('click', '#placeBidButton', function() {
             var lotId = $('#lotDetailsBody').data('lot-id');
             var bidAmount = $('#bidAmount').val();
@@ -102,7 +99,6 @@
         });
 
         function updateLotDetails(lotId) {
-            // Загрузить новые данные лота и обновить карточку на странице
             $.getJSON('/lots/' + lotId, function(lot) {
                 var card = $('.lot-details-button[data-lot-id="' + lotId + '"]').closest('.card');
                 card.find('.card-title').text(lot.nameLots);
@@ -164,23 +160,36 @@
             url += '/category/' + categoryId;
         }
 
-        $.getJSON(url, function(lots) {
-            var lotsContainer = $('#lotsContainer');
-            lotsContainer.empty();
-            lots.forEach(function(lot) {
-                var cardHtml = buildLotCard(lot);
-                lotsContainer.append(cardHtml);
-            });
+        $.getJSON(url, function(allLots) {
+            // После загрузки всех лотов, фильтруем лоты пользователя
+            filterUserBids(allLots, function(filteredLots) {
+                var lotsContainer = $('#lotsContainer');
+                lotsContainer.empty(); // Очищаем контейнер перед добавлением новых лотов
+                filteredLots.forEach(function(lot) {
+                    var cardHtml = buildLotCard(lot);
+                    lotsContainer.append(cardHtml);
+                });
 
-            $('.lot-details-button').click(function() {
-                var lotId = $(this).data('lot-id');
-                showLotDetails(lotId, lots);
+                $('.lot-details-button').click(function() {
+                    var lotId = $(this).data('lot-id');
+                    showLotDetails(lotId, filteredLots);
+                });
             });
-
         });
     }
 
-    // Формирование карточки лота
+    // Фильтрация лотов пользователя
+    function filterUserBids(lots, callback) {
+        $.getJSON('/bids/my', function(userBids) {
+            var filteredLots = lots.filter(function(lot) {
+                return !userBids.some(function(bid) {
+                    return bid.lotId === lot.id;
+                });
+            });
+            callback(filteredLots);
+        });
+    }
+
     function buildLotCard(lot) {
         return '<div class="col-md-4">' +
             '<div class="card">' +
@@ -203,8 +212,8 @@
         if (lot) {
             $.getJSON('/category/' + lot.categoryId, function(category) {
                 var modalBody = $('#lotDetailsBody');
-                modalBody.data('lot-id', lot.id); // Установка data-lot-id для modalBody
-                modalBody.empty(); // Очищаем содержимое модального окна перед добавлением новых элементов
+                modalBody.data('lot-id', lot.id);
+                modalBody.empty();
                 modalBody.html('<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
                     '<p><strong>Наименование:</strong> ' + lot.nameLots + '</p>' +
                     '<p><strong>Категория:</strong> ' + category.nameCategory + '</p>' +

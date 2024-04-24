@@ -27,5 +27,14 @@ public class BuyerWebController {
         }
         return "buyer_lots";
     }
+
+    @GetMapping("/my_bids")
+    public String myBids(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
+            model.addAttribute("login", authentication.getName());
+        }
+        return "my_bids";
+    }
 }
 

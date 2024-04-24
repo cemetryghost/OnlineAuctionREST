@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Участие в торгах</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script> <!-- Подключение Bootstrap JS -->
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Участие в торгах</h2>
+    <div class="row" id="userBidsContainer"></div>
+</div>
+
+<!-- Модальное окно для подробностей о лоте и повышения ставки -->
+<div class="modal fade" id="lotDetailsModal" tabindex="-1" aria-labelledby="lotDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lotDetailsModalLabel">Детали лота</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="lotDetailsBody">
+                <!-- Здесь будут детали лота -->
+            </div>
+            <div class="modal-footer" id="lotDetailsFooter">
+                <!-- Здесь будут поле для ввода новой суммы ставки и кнопка для повышения -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var statusTranslations = {
+        'AWAITING_CONFIRMATION_LOT': 'Ожидает подтверждения',
+        'ACTIVE_LOT': 'Активный',
+        'COMPLETED_LOT': 'Завершен'
+    };
+
+    $(document).ready(function() {
+        loadUserBids();
+
+        $(document).on('click', '.lot-details-button', function() {
+            var lotId = $(this).data('lot-id');
+            showLotDetailsModal(lotId);
+        });
+
+        $('#lotDetailsModal').on('click', '#increaseBidButton', function() {
+            var bidId = $('#lotDetailsBody').data('bid-id');
+            var newBidAmount = $('#newBidAmount').val();
+            if (!newBidAmount) {
+                alert("Пожалуйста, введите новую сумму ставки.");
+                return;
+            }
+
+            $.ajax({
+                url: '/bids/' + bidId + '/increase',
+                type: 'PUT',
+                data: { newBidAmount: newBidAmount },
+                success: function(response) {
+                    alert('Ставка успешно повышена!');
+                    $('#lotDetailsModal').modal('hide');
+                    loadUserBids(); // Обновление информации о ставках пользователя на странице
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    alert('Произошла ошибка при повышении ставки. Пожалуйста, попробуйте еще раз.');
+                }
+            });
+        });
+    });
+
+    function loadUserBids() {
+        $.getJSON('/bids/my', function(userBids) {
+            var userBidsContainer = $('#userBidsContainer');
+            userBidsContainer.empty();
+            userBids.forEach(function(bid) {
+                $.getJSON('/lots/' + bid.lotId, function(lot) {
+                    var cardHtml = buildUserBidCard(lot, bid);
+                    userBidsContainer.append(cardHtml);
+                });
+            });
+        });
+    }
+
+    function buildUserBidCard(lot, bid) {
+        var status = lot.statusLots === 'ACTIVE_LOT' ? 'Активный' : 'Завершен';
+        var bidAmount = bid.bidAmount || 'Ставка еще не сделана';
+
+        return '<div class="col-md-4">' +
+            '<div class="card">' +
+            '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
+            '<div class="card-body">' +
+            '<h5 class="card-title">' + lot.nameLots + '</h5>' +
+            '<p class="card-text">' + lot.descriptionLots + '</p>' +
+            '<p class="card-text">Статус: ' + status + '</p>' +
+            '<p class="card-text">Текущая цена: ' + (lot.currentPrice || 'Ставки еще не сделаны') + '</p>' +
+            '<p class="card-text">Ваша ставка: ' + bidAmount + '</p>' +
+            '<button type="button" class="btn btn-primary lot-details-button" data-lot-id="' + lot.id + '">Подробнее</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+    }
+
+    function showLotDetailsModal(lotId) {
+        $.getJSON('/lots/' + lotId, function(lot) {
+            $.getJSON('/category/' + lot.categoryId, function(category) {
+                $.getJSON('/bids/my', function(userBids) {
+                    var currentBid = userBids.find(function(bid) {
+                        return bid.lotId === lotId;
+                    });
+
+                    var modalBody = $('#lotDetailsBody');
+                    var modalFooter = $('#lotDetailsFooter');
+
+                    modalBody.data('bid-id', currentBid.id);
+                    modalBody.empty();
+                    modalBody.html(
+                        '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
+                        '<p><strong>Наименование:</strong> ' + lot.nameLots + '</p>' +
+                        '<p><strong>Категория:</strong> ' + category.nameCategory + '</p>' +
+                        '<p><strong>Описание:</strong> ' + lot.descriptionLots + '</p>' +
+                        '<p><strong>Стартовая цена:</strong> ' + lot.startPrice + '</p>' +
+                        '<p><strong>Текущая цена:</strong> ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
+                        '<p><strong>Ваша ставка:</strong> ' + (currentBid.bidAmount || 'Ставка еще не сделана') + '</p>' +
+                        '<p><strong>Шаг цены:</strong> ' + lot.stepPrice + '</p>' +
+                        '<p><strong>Дата публикации:</strong> ' + lot.publicationDate + '</p>' +
+                        '<p><strong>Дата закрытия:</strong> ' + lot.closingDate + '</p>' +
+                        '<p><strong>Состояние:</strong> ' + lot.conditionLots + '</p>' +
+                        '<p><strong>Статус:</strong> ' + statusTranslations[lot.statusLots] + '</p>' +
+                        '<hr>' +
+                        '<p>Введите новую сумму ставки:</p>' +
+                        '<input type="number" id="newBidAmount" class="form-control" placeholder="Введите новую сумму ставки">' +
+                        '<button type="button" class="btn btn-primary" id="increaseBidButton">Повысить ставку</button>'
+                    );
+
+                    $('#lotDetailsModal').modal('show');
+                });
+            });
+        });
+    }
+</script>
+</body>
+</html>
+

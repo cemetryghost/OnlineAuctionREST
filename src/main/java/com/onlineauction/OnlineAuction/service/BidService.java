@@ -12,5 +12,7 @@ public interface BidService {
     BidDTO updateBid(Long id, BigDecimal newBidAmount);
     void deleteBid(Long id);
     List<BidDTO> getBidsByLotId(Long lotId);
+    List<BidDTO> getMyBidsWithLotDetails();
+
 }
 

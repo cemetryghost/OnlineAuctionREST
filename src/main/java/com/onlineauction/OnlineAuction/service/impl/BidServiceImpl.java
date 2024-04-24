@@ -1,14 +1,17 @@
 package com.onlineauction.OnlineAuction.service.impl;
 
 import com.onlineauction.OnlineAuction.dto.BidDTO;
+import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Bid;
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
+import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.mapper.BidMapper;
 import com.onlineauction.OnlineAuction.repository.BidRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.BidService;
+import com.onlineauction.OnlineAuction.service.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,9 @@ public class BidServiceImpl implements BidService {
         this.userRepository = userRepository;
         this.bidMapper = bidMapper;
     }
+
+    @Autowired
+    private LotService lotService;
 
     @Autowired
     private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
@@ -71,17 +77,22 @@ public class BidServiceImpl implements BidService {
                 .orElseThrow(() -> new IllegalArgumentException("Ставка с таким id не найдена: " + id));
 
         Lot lot = existingBid.getLot();
+        if (!lot.getStatusLots().equals(StatusLot.ACTIVE_LOT)) {
+            throw new IllegalStateException("Ставку можно повышать только на активные лоты");
+        }
+
         BigDecimal currentPrice = lot.getCurrentPrice();
         BigDecimal stepPrice = lot.getStepPrice();
-
         BigDecimal newBidTotalAmount = currentPrice.add(stepPrice);
 
         if (newBidAmount.compareTo(newBidTotalAmount) < 0) {
             throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шаг");
         }
 
-        existingBid.setBidAmount(newBidTotalAmount);
+        existingBid.setBidAmount(newBidAmount);
         existingBid = bidRepository.save(existingBid);
+        lot.setCurrentPrice(newBidAmount);
+        lotRepository.save(lot);
 
         return bidMapper.bidToBidDTO(existingBid);
     }
@@ -115,22 +126,34 @@ public class BidServiceImpl implements BidService {
             throw new UsernameNotFoundException("Пользователь не найден");
         }
 
-        // Создаем объект ставки и устанавливаем соответствующие значения
         Bid bid = bidMapper.BidDTOtoBid(bidDTO);
         bid.setLot(lot);
         bid.setBuyer(buyer);
 
-        // Сохраняем ставку
         bid = bidRepository.save(bid);
 
-        // Обновляем текущую цену и идентификатор текущего покупателя для лота
         lot.setCurrentPrice(bidDTO.getBidAmount());
         lot.setCurrentBuyerId(buyer);
         lotRepository.save(lot);
 
-        // Возвращаем информацию о размещенной ставке
         return bidMapper.bidToBidDTO(bid);
     }
 
+    @Transactional
+    @Override
+    public List<BidDTO> getMyBidsWithLotDetails() {
+        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
+        UserAccounts buyer = userRepository.findByLogin(currentUserLogin);
+        if (buyer == null) {
+            throw new UsernameNotFoundException("Пользователь не найден");
+        }
+        List<Bid> myBids = bidRepository.findByBuyerId(buyer.getId());
+        return myBids.stream().map(bid -> {
+            BidDTO bidDTO = bidMapper.bidToBidDTO(bid);
+            LotDTO lotDTO = lotService.getLotById(bid.getLot().getId());
+            bidDTO.setLotDTO(lotDTO);
+            return bidDTO;
+        }).collect(Collectors.toList());
+    }
 
 }
