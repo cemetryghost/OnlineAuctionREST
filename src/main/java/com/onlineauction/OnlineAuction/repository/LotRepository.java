@@ -2,6 +2,7 @@ package com.onlineauction.OnlineAuction.repository;
 
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,5 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
     List<Lot> findByStatusLots(StatusLot status);
     List<Lot> findByCategoryIdIdAndStatusLots(Long categoryId, StatusLot status);
     List<Lot> findAllByClosingDateBeforeAndStatusLotsNot(LocalDate now, StatusLot statusLot);
+    List<Lot> findAll(Specification<Lot> spec);
 }

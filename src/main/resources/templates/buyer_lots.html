@@ -11,6 +11,11 @@
 <div class="container mt-3">
     <h2>Активные лоты</h2>
     <div class="form-group">
+        <div class="form-group">
+            <label for="searchKeyword">Поиск:</label>
+            <input type="text" class="form-control" id="searchKeyword" placeholder="Введите ключевое слово">
+            <button type="button" class="btn btn-primary mt-2" id="searchButton">Поиск</button>
+        </div>
         <label for="categoryFilter">Фильтр по категории:</label>
         <select class="form-control" id="categoryFilter">
             <option value="">Все категории</option>
@@ -134,12 +139,10 @@
             });
         }
 
-
-
-        // Изменение выбранной категории
         $('#categoryFilter').change(function() {
             var selectedCategory = $(this).val();
-            loadActiveLots(selectedCategory); // Загрузка лотов с учетом выбранной категории
+            var keyword = $('#searchKeyword').val().trim(); // Получаем текущее значение поля поиска
+            loadActiveLots(selectedCategory, keyword); // Обновляем лоты с учетом категории и ключевого слова
         });
     });
 
@@ -153,32 +156,48 @@
         });
     }
 
-    // Загрузка активных лотов
-    function loadActiveLots(categoryId = '') {
-        var url = '/lots/active';
+    function loadActiveLots(categoryId = '', keyword = '') {
+        var url = '/lots/active/search';
+        var params = {};
+
         if (categoryId) {
-            url += '/category/' + categoryId;
+            params.categoryId = categoryId;
+        }
+        if (keyword) {
+            params.keyword = keyword;
         }
 
-        $.getJSON(url, function(allLots) {
-            // После загрузки всех лотов, фильтруем лоты пользователя
-            filterUserBids(allLots, function(filteredLots) {
+        $.getJSON(url, params)
+            .done(function(allLots) {
                 var lotsContainer = $('#lotsContainer');
-                lotsContainer.empty(); // Очищаем контейнер перед добавлением новых лотов
-                filteredLots.forEach(function(lot) {
-                    var cardHtml = buildLotCard(lot);
-                    lotsContainer.append(cardHtml);
-                });
+                lotsContainer.empty();
+
+                if (allLots.length === 0) {
+                    lotsContainer.append('<p>Лоты не найдены!</p>');
+                } else {
+                    allLots.forEach(function(lot) {
+                        var cardHtml = buildLotCard(lot);
+                        lotsContainer.append(cardHtml);
+                    });
+                }
 
                 $('.lot-details-button').click(function() {
                     var lotId = $(this).data('lot-id');
-                    showLotDetails(lotId, filteredLots);
+                    showLotDetails(lotId, allLots);
                 });
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Ошибка загрузки лотов: ', textStatus, errorThrown);
+                $('#lotsContainer').empty().append('<p>Произошла ошибка при загрузке лотов!</p>');
             });
-        });
     }
 
-    // Фильтрация лотов пользователя
+    $('#searchButton').click(function() {
+        var keyword = $('#searchKeyword').val().trim();
+        var selectedCategory = $('#categoryFilter').val();
+        loadActiveLots(selectedCategory, keyword);
+    });
+
     function filterUserBids(lots, callback) {
         $.getJSON('/bids/my', function(userBids) {
             var filteredLots = lots.filter(function(lot) {

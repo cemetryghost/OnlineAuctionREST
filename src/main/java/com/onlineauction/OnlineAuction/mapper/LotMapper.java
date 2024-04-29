@@ -1,6 +1,5 @@
 package com.onlineauction.OnlineAuction.mapper;
 
-import com.onlineauction.OnlineAuction.context.MappingContext;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;

@@ -94,10 +94,7 @@
 			<version>1.4.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
-
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

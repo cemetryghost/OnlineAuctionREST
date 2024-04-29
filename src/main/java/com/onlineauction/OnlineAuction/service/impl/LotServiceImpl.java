@@ -1,6 +1,6 @@
 package com.onlineauction.OnlineAuction.service.impl;
 
-import com.onlineauction.OnlineAuction.context.MappingContext;
+import com.onlineauction.OnlineAuction.mapper.MappingContext;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Category;
 import com.onlineauction.OnlineAuction.entity.Lot;
@@ -12,7 +12,9 @@ import com.onlineauction.OnlineAuction.repository.CategoryRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
+import com.onlineauction.OnlineAuction.specification.LotSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +73,20 @@ public class LotServiceImpl implements LotService {
         return lotRepository.findAll().stream()
                 .map(lotMapper::lotToLotDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public List<LotDTO> searchActiveLots(Long categoryId, String keyword) {
+        Specification<Lot> spec = Specification.where(LotSpecification.isActive());
+        if (categoryId != null) {
+            spec = spec.and(LotSpecification.hasCategory(categoryId));
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            spec = spec.and(LotSpecification.hasKeyword(keyword));
+        }
+        List<Lot> lots = lotRepository.findAll(spec);
+        return lots.stream().map(lotMapper::lotToLotDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -168,7 +184,7 @@ public class LotServiceImpl implements LotService {
                 .orElseThrow(() -> new IllegalArgumentException("Лот с такми id не найден: " + id));
 
         if (lot.getCurrentBuyerId() != null) {
-            throw new IllegalStateException("Удвление лота запрещено, так как есть текущий покупатель");
+            throw new IllegalStateException("Удаление лота запрещено, так как есть текущий покупатель");
         }
         lotRepository.deleteById(id);
     }

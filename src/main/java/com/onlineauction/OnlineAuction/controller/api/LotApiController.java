@@ -8,6 +8,8 @@ import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +48,15 @@ public class LotApiController {
     @GetMapping
     public ResponseEntity<List<LotDTO>> getAllLots(@RequestParam(required = false) StatusLot statusLot) {
         List<LotDTO> lots = lotService.getLotsByStatus(statusLot);
+        return ResponseEntity.ok(lots);
+    }
+
+    @GetMapping("/active/search")
+    public ResponseEntity<List<LotDTO>> searchActiveLots(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long categoryId) {
+
+        List<LotDTO> lots = lotService.searchActiveLots(categoryId, keyword);
         return ResponseEntity.ok(lots);
     }
 

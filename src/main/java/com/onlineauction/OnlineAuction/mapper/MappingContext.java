@@ -1,4 +1,4 @@
-package com.onlineauction.OnlineAuction.context;
+package com.onlineauction.OnlineAuction.mapper;
 
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
