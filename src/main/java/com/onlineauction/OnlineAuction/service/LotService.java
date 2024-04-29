@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface LotService {
     List<LotDTO> getAllLots();
+    List<LotDTO> getLotsByStatus(StatusLot statusLot);
     LotDTO getLotById(Long id);
     LotDTO createLot(LotDTO lotDTO, MultipartFile file) throws IOException;
     LotDTO updateLot(Long id, LotDTO lotDTO, MultipartFile image) throws IOException;
@@ -21,4 +22,6 @@ public interface LotService {
     List<LotDTO> getCompletedLotsBySellerId();
     List<LotDTO> getActiveLots();
     List<LotDTO> getActiveLotsByCategoryId(Long categoryId);
+    void checkAndUpdateLotStatusDateClosing();
+    void updateLotStatusesDateClosing();
 }

@@ -13,7 +13,6 @@
     <div class="row" id="userBidsContainer"></div>
 </div>
 
-<!-- Модальное окно для подробностей о лоте и повышения ставки -->
 <div class="modal fade" id="lotDetailsModal" tabindex="-1" aria-labelledby="lotDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -63,7 +62,7 @@
                 success: function(response) {
                     alert('Ставка успешно повышена!');
                     $('#lotDetailsModal').modal('hide');
-                    loadUserBids(); // Обновление информации о ставках пользователя на странице
+                    loadUserBids();
                 },
                 error: function(xhr, status, error) {
                     console.error(error);

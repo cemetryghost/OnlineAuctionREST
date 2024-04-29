@@ -3,6 +3,7 @@ package com.onlineauction.OnlineAuction.entity;
 import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +37,9 @@ public class UserAccounts {
 
     @Column(nullable = false)
     private LocalDate birth_date;
+
+    @Email
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

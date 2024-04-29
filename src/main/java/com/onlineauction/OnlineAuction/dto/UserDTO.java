@@ -2,10 +2,7 @@ package com.onlineauction.OnlineAuction.dto;
 
 import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.Status;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -26,9 +23,12 @@ public class UserDTO {
     @Size(min = 8, message = "Пароль должен быть равен 8 символам или более")
     private String password;
 
-    @NotNull(message = "Дата рождения не может быть пустрой")
+    @NotNull(message = "Дата рождения не может быть пустой")
     @Past(message = "Дата рождения должна быть в прошлом")
     private LocalDate birth_date;
+
+    @Email(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", message = "Некорректный формат email адреса")
+    private String email;
 
     @NotNull(message = "Роль не может быть пустой")
     private Role role;

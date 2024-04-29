@@ -30,19 +30,40 @@ public class LotServiceImpl implements LotService {
     private final LotMapper lotMapper;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final MappingContext mappingContext;
+    private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
     @Autowired
-    private MappingContext mappingContext;
-
-    @Autowired
-    private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
-
-    @Autowired
-    public LotServiceImpl(LotRepository lotRepository, LotMapper lotMapper, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public LotServiceImpl(LotRepository lotRepository, LotMapper lotMapper, CategoryRepository categoryRepository, UserRepository userRepository, MappingContext mappingContext, CustomUserDetailsServiceImpl customUserDetailsServiceImpl) {
         this.lotRepository = lotRepository;
         this.lotMapper = lotMapper;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.mappingContext = mappingContext;
+        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
+    }
+
+//  Метод, при запуске проверяет дату закрытия лота
+    @Override
+    public void checkAndUpdateLotStatusDateClosing() {
+        List<Lot> lots = lotRepository.findAll();
+        LocalDate currentDate = LocalDate.now();
+        for (Lot lot : lots) {
+            if (lot.getClosingDate().isBefore(currentDate) && lot.getStatusLots() != StatusLot.COMPLETED_LOT) {
+                lot.setStatusLots(StatusLot.COMPLETED_LOT);
+                lotRepository.save(lot);
+            }
+        }
+    }
+
+//  Метод, планироващика, для проверки даты закрытия при запущенном сервере
+    @Override
+    public void updateLotStatusesDateClosing() {
+        List<Lot> lots = lotRepository.findAllByClosingDateBeforeAndStatusLotsNot(LocalDate.now().plusDays(1), StatusLot.COMPLETED_LOT);
+        for (Lot lot : lots) {
+            lot.setStatusLots(StatusLot.COMPLETED_LOT);
+            lotRepository.save(lot);
+        }
     }
 
     @Override
@@ -50,6 +71,18 @@ public class LotServiceImpl implements LotService {
         return lotRepository.findAll().stream()
                 .map(lotMapper::lotToLotDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public List<LotDTO> getLotsByStatus(StatusLot statusLot) {
+        if (statusLot != null) {
+            return lotRepository.findByStatusLots(statusLot).stream()
+                    .map(lotMapper::lotToLotDTO)
+                    .collect(Collectors.toList());
+        } else {
+            return getAllLots();
+        }
     }
 
     @Override
@@ -176,6 +209,7 @@ public class LotServiceImpl implements LotService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<LotDTO> getLotsByCurrentSeller() {
         String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
@@ -187,6 +221,7 @@ public class LotServiceImpl implements LotService {
         return lots.stream().map(lotMapper::lotToLotDTO).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<LotDTO> getCompletedLotsBySellerId() {
         String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
@@ -200,6 +235,7 @@ public class LotServiceImpl implements LotService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<LotDTO> getActiveLots() {
         return lotRepository.findByStatusLots(StatusLot.ACTIVE_LOT).stream()
@@ -207,6 +243,7 @@ public class LotServiceImpl implements LotService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<LotDTO> getActiveLotsByCategoryId(Long categoryId) {
         return lotRepository.findByCategoryIdIdAndStatusLots(categoryId, StatusLot.ACTIVE_LOT).stream()

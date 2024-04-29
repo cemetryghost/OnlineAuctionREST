@@ -13,9 +13,11 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "role", source = "role")
+    @Mapping(target = "email", source = "email")
     UserAccounts userDTOToUser(UserDTO userDTO);
 
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "email", source = "email")
     UserDTO userToUserDTO(UserAccounts user);
 
     @Mapping(target = "password", ignore = true)

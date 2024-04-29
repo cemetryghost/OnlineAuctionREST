@@ -2,6 +2,7 @@ package com.onlineauction.OnlineAuction.service.impl;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
+import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.Status;
 import com.onlineauction.OnlineAuction.mapper.UserMapper;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +35,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO registerNewUser(UserDTO userDTO) {
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate = userDTO.getBirth_date();
+        long age = ChronoUnit.YEARS.between(birthDate, today);
+        if (age < 18) {
+            throw new RuntimeException("Регистрация на платформе доступна только с 18 лет!");
+        }
         if (userRepository.existsByLogin(userDTO.getLogin())) {
-            throw new RuntimeException("Пользователь с таким логином уже сузествует");
+            throw new RuntimeException("Пользователь с таким логином уже существует");
+        }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new RuntimeException("Пользователь с таким email уже существует");
         }
         userDTO.setStatus(Status.ACTIVE);
         UserAccounts user = userMapper.userDTOToUser(userDTO);
@@ -53,6 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
+                .filter(user -> user.getRole() != Role.ADMIN)  // Фильтрация, чтобы исключить пользователей с ролью ADMIN
                 .map(userMapper::userToUserDTO)
                 .collect(Collectors.toList());
     }

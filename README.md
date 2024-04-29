@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    <img src="src/main/resources/image/istockphoto-1368360794-612x612.jpg" width=400, height=400>
+    <img src="src/main/resources/static/image/istockphoto-1368360794-612x612.jpg" width=400, height=400>
   <h3 align="center">Онлайн аукцион</h3>
   <p align="center">
     Платформа для торговли

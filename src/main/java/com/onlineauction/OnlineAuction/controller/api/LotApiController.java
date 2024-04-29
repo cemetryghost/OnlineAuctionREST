@@ -1,10 +1,10 @@
 package com.onlineauction.OnlineAuction.controller.api;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Lot;
-import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,13 +44,8 @@ public class LotApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LotDTO>> getAllLots(@RequestParam(required = false) Long sellerId) {
-        List<LotDTO> lots;
-        if (sellerId != null) {
-            lots = lotService.getLotsBySellerId(sellerId);
-        } else {
-            lots = lotService.getAllLots();
-        }
+    public ResponseEntity<List<LotDTO>> getAllLots(@RequestParam(required = false) StatusLot statusLot) {
+        List<LotDTO> lots = lotService.getLotsByStatus(statusLot);
         return ResponseEntity.ok(lots);
     }
 
@@ -64,7 +58,7 @@ public class LotApiController {
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<LotDTO> createLot(
             @RequestParam("lot") String lotStr,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @RequestParam(value = "static/image", required = false) MultipartFile image) {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -80,7 +74,7 @@ public class LotApiController {
     public ResponseEntity<LotDTO> updateLot(
             @PathVariable Long id,
             @RequestParam("lot") String lotStr,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @RequestParam(value = "static/image", required = false) MultipartFile image) {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
             LotDTO lotDTO = objectMapper.readValue(lotStr, LotDTO.class);
@@ -99,7 +93,7 @@ public class LotApiController {
     }
 
     @PostMapping("/{lotId}/image")
-    public ResponseEntity<?> uploadImage(@PathVariable Long lotId, @RequestParam("image") MultipartFile image) {
+    public ResponseEntity<?> uploadImage(@PathVariable Long lotId, @RequestParam("static/image") MultipartFile image) {
         try {
             lotService.uploadImage(lotId, image);
             return ResponseEntity.ok("Изображение успешно загружено");
@@ -122,7 +116,6 @@ public class LotApiController {
         return new ResponseEntity<>(lot.getImage(), headers, HttpStatus.OK);
     }
 
-    @Transactional
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<LotDTO>> getLotsByCategoryId(@PathVariable Long categoryId) {
         List<LotDTO> lotDTO = lotService.getLotsByCategoryId(categoryId);
@@ -135,31 +128,26 @@ public class LotApiController {
         return updatedLot != null ? ResponseEntity.ok(updatedLot) : ResponseEntity.notFound().build();
     }
 
-    @Transactional
     @GetMapping("/my")
     public ResponseEntity<List<LotDTO>> getMyLots() {
         return ResponseEntity.ok(lotService.getLotsByCurrentSeller());
     }
 
-    @Transactional
     @GetMapping("/my/completed")
     public ResponseEntity<List<LotDTO>> getMyCompletedLots() {
         List<LotDTO> completedLots = lotService.getCompletedLotsBySellerId();
         return ResponseEntity.ok(completedLots);
     }
 
-    @Transactional
     @GetMapping("/active")
     public ResponseEntity<List<LotDTO>> getActiveLots() {
         List<LotDTO> activeLots = lotService.getActiveLots();
         return ResponseEntity.ok(activeLots);
     }
 
-    @Transactional
     @GetMapping("/active/category/{categoryId}")
     public ResponseEntity<List<LotDTO>> getActiveLotsByCategoryId(@PathVariable Long categoryId) {
         List<LotDTO> activeLots = lotService.getActiveLotsByCategoryId(categoryId);
         return ResponseEntity.ok(activeLots);
     }
-
 }

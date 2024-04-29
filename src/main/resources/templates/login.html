@@ -4,60 +4,8 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 15px 15px 0 0;
-            text-align: center;
-            padding: 20px 0;
-        }
-        .card-body {
-            padding: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-control {
-            border-radius: 20px;
-        }
-        .btn-primary {
-            border-radius: 20px;
-            padding: 10px 25px;
-            background-color: #007bff;
-            border: none;
-            font-size: 18px;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-link {
-            color: #007bff;
-        }
-        .btn-link:hover {
-            color: #0056b3;
-        }
-        .error-message {
-            display: none;
-            color: red;
-            margin-top: 10px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -67,13 +15,14 @@
                 <h2>Авторизация</h2>
             </div>
             <div class="card-body">
-                <div id="error-message" class="error-message"></div>
                 <form action="/auth/login" method="post">
+                    <div id="error-message" class="error-message"></div>
                     <div class="form-group">
                         <input type="text" class="form-control" id="login" name="login" placeholder="Логин" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="position: relative;">
                         <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required>
+                        <i class="bi bi-eye-slash" id="togglePassword" style="position: absolute; right: 15px; top: 45%; transform: translateY(-50%); cursor: pointer;"></i>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Войти</button>
                     <p class="text-center mt-3 mb-0"><a href="/auth/register" class="btn-link">Зарегистрироваться</a></p>
@@ -96,6 +45,14 @@
             document.getElementById("error-message").innerText = "Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin123@gmail.com";
             document.getElementById("error-message").style.display = 'block';
         }
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        togglePassword.addEventListener('click', () => {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            togglePassword.classList.toggle('bi-eye');
+            togglePassword.classList.toggle('bi-eye-slash');
+        });
     });
 </script>
 </body>

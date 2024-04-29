@@ -29,6 +29,15 @@
 <body>
 <div class="container mt-3">
     <h2>Список лотов</h2>
+    <div class="form-group" id="statusSelectContainer" style="display: none;">
+        <label for="statusSelect">Отображение лотов по статусу:</label>
+        <select class="form-control" id="statusSelect">
+            <option value="">Все статусы</option>
+            <option value="AWAITING_CONFIRMATION_LOT">Ожидает подтверждения</option>
+            <option value="ACTIVE_LOT">Активный</option>
+            <option value="COMPLETED_LOT">Завершен</option>
+        </select>
+    </div>
     <button type="button" id="addLotButton" class="btn btn-success mb-3" style="display: none;">Добавить лот</button>
     <div class="row" id="lotsContainer">
 
@@ -240,6 +249,15 @@
     $(document).ready(function () {
         loadCategories();
 
+        if (userRole === 'ROLE_ADMIN') {
+            $('#statusSelectContainer').show();
+        }
+
+        $('#statusSelect').change(function () {
+            var selectedStatus = $(this).val();
+            loadLots(selectedStatus);
+        });
+
         if (userRole === 'ROLE_SELLER') {
             $('#addLotButton').show();
         }
@@ -416,41 +434,62 @@
             }
         });
 
-        function loadLots() {
+        function loadLots(status) {
             var url;
 
-            // Определите URL в зависимости от роли пользователя
             if (userRole === 'ROLE_ADMIN') {
                 url = '/lots';
             } else if (userRole === 'ROLE_SELLER') {
                 url = '/lots/my';
             }
 
+            if (status) {
+                if (userRole === 'ROLE_ADMIN') {
+                    url += '?statusLot=' + status;
+                } else {
+                    url += '/status?status=' + status;
+                }
+            }
+
+            console.log('Запрашиваемый URL:', url); // Отладочная информация
+
             $.getJSON(url, function (data) {
                 lots = data;
                 var lotsContainer = $('#lotsContainer');
                 lotsContainer.empty();
 
-                lots.forEach(function (lot) {
-                    var statusText = statusTranslations[lot.statusLots] || lot.statusLots;
+                if (lots.length === 0) {
+                    // Если лоты с выбранным статусом отсутствуют, отобразите красивое сообщение об этом
+                    var message = '<div class="alert alert-info" role="alert">' +
+                        '<h4 class="alert-heading">Нет лотов</h4>' +
+                        '<p>К сожалению, в данный момент нет лотов с выбранным статусом.</p>' +
+                        '<hr>' +
+                        '<p class="mb-0">Пожалуйста, попробуйте выбрать другой статус или обновите страницу позже.</p>' +
+                        '</div>';
 
-                    if ((userRole === 'ROLE_SELLER' && (lot.statusLots === 'AWAITING_CONFIRMATION_LOT' || lot.statusLots === 'ACTIVE_LOT')) || userRole === 'ROLE_ADMIN') {
-                        var cardHtml = '<div class="col-md-4">' +
-                            '<div class="card">' +
-                            '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
-                            '<div class="card-body">' +
-                            '<h5 class="card-title">' + lot.nameLots + '</h5>' +
-                            '<p class="card-text">' + lot.descriptionLots + '</p>' +
-                            '<p class="card-text">Текущая цена: ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
-                            '<p class="card-text">Статус: ' + statusText + '</p>' +
-                            '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>';
+                    lotsContainer.append(message);
+                } else {
+                    lots.forEach(function (lot) {
+                        var statusText = statusTranslations[lot.statusLots] || lot.statusLots;
 
-                        lotsContainer.append(cardHtml);
-                    }
-                });
+                        if ((userRole === 'ROLE_SELLER' && (lot.statusLots === 'AWAITING_CONFIRMATION_LOT' || lot.statusLots === 'ACTIVE_LOT')) || userRole === 'ROLE_ADMIN') {
+                            var cardHtml = '<div class="col-md-4">' +
+                                '<div class="card">' +
+                                '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="card-img-top" alt="Изображение лота">' +
+                                '<div class="card-body">' +
+                                '<h5 class="card-title">' + lot.nameLots + '</h5>' +
+                                '<p class="card-text">' + lot.descriptionLots + '</p>' +
+                                '<p class="card-text">Текущая цена: ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
+                                '<p class="card-text">Статус: ' + statusText + '</p>' +
+                                '<button type="button" class="btn btn-primary" onclick="showLotDetails(' + lot.id + ')">Подробнее</button>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+
+                            lotsContainer.append(cardHtml);
+                        }
+                    });
+                }
             });
         }
 

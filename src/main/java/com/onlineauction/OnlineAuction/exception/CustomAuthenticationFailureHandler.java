@@ -22,8 +22,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         if (exception.getCause() instanceof LockedException) {
             redirectURL = "/auth/login?blocked=true";
         }
-        logger.info("Authentication failure: " + exception.getMessage() + ", redirecting to: " + redirectURL);
-
         response.sendRedirect(redirectURL);
     }
 }
