@@ -14,5 +14,5 @@ public class CategoryDTO {
     @NotBlank (message = "Имя категории не может быть пустым")
     private String nameCategory;
 
-    private LotDTO lotDTO;
+//    private LotDTO lotDTO;
 }

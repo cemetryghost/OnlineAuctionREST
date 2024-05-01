@@ -5,12 +5,14 @@ import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {MappingContext.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, MappingContext.class})
 public interface LotMapper {
 
     @Mapping(target = "categoryId", source = "categoryId.id")
     @Mapping(target = "sellerId", source = "sellerId.id")
     @Mapping(target = "currentBuyerId", source = "currentBuyerId.id")
+    @Mapping(target = "sellerDetails", source = "sellerId")
+    @Mapping(target = "buyerDetails", source = "currentBuyerId")
     LotDTO lotToLotDTO(Lot lot);
 
     @Mapping(target = "categoryId.id", source = "categoryId")
@@ -25,6 +27,7 @@ public interface LotMapper {
         }
         return context.getUserRepository().findById(id).orElse(null);
     }
+
     @AfterMapping
     default void setHasImage(Lot lot, @MappingTarget LotDTO lotDTO) {
         lotDTO.setHasImage(lot.getImage() != null && lot.getImage().length > 0);

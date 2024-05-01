@@ -43,4 +43,7 @@ public class LotDTO {
     private Long sellerId;
     private Long currentBuyerId;
     private boolean hasImage;
+
+    private UserDTO sellerDetails;
+    private UserDTO buyerDetails;
 }
