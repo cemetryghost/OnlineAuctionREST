@@ -5,6 +5,7 @@ import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.Status;
 import com.onlineauction.OnlineAuction.mapper.UserMapper;
+import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +24,24 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
+    private final LotRepository lotRepository;
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, CustomUserDetailsServiceImpl customUserDetailsServiceImpl) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, CustomUserDetailsServiceImpl customUserDetailsServiceImpl, LotRepository lotRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
+        this.lotRepository = lotRepository;
     }
 
     @Override
     public UserDTO registerNewUser(UserDTO userDTO) {
-        LocalDate today = LocalDate.now();
-        LocalDate birthDate = userDTO.getBirth_date();
-        long age = ChronoUnit.YEARS.between(birthDate, today);
-        if (age < 18) {
-            throw new RuntimeException("Регистрация на платформе доступна только с 18 лет!");
-        }
-        if (userRepository.existsByLogin(userDTO.getLogin())) {
-            throw new RuntimeException("Пользователь с таким логином уже существует");
-        }
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
-        }
+        validateUserAge(userDTO.getBirth_date());
+
+        checkDuplicateUser(userDTO.getLogin(), userDTO.getEmail());
+
         userDTO.setStatus(Status.ACTIVE);
         UserAccounts user = userMapper.userDTOToUser(userDTO);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -65,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole() != Role.ADMIN)  // Фильтрация, чтобы исключить пользователей с ролью ADMIN
+                .filter(user -> user.getRole() != Role.ADMIN)
                 .map(userMapper::userToUserDTO)
                 .collect(Collectors.toList());
     }
@@ -80,6 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        lotRepository.updateCurrentPriceByCurrentBuyerId(id);
         userRepository.deleteById(id);
     }
 
@@ -97,5 +93,22 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         user.setStatus(Status.ACTIVE);
         userRepository.save(user);
+    }
+
+    private void validateUserAge(LocalDate birthDate) {
+        LocalDate today = LocalDate.now();
+        long age = ChronoUnit.YEARS.between(birthDate, today);
+        if (age < 18) {
+            throw new RuntimeException("Регистрация на платформе доступна только с 18 лет!");
+        }
+    }
+
+    private void checkDuplicateUser(String login, String email) {
+        if (userRepository.existsByLogin(login)) {
+            throw new RuntimeException("Пользователь с таким логином уже существует");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Пользователь с таким email уже существует");
+        }
     }
 }

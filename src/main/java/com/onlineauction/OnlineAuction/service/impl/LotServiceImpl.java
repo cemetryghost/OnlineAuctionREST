@@ -58,7 +58,7 @@ public class LotServiceImpl implements LotService {
         }
     }
 
-//  Метод, планироващика, для проверки даты закрытия при запущенном сервере
+//  Метод планироващика, для проверки даты закрытия при запущенном сервере
     @Override
     public void updateLotStatusesDateClosing() {
         List<Lot> lots = lotRepository.findAllByClosingDateBeforeAndStatusLotsNot(LocalDate.now().plusDays(1), StatusLot.COMPLETED_LOT);

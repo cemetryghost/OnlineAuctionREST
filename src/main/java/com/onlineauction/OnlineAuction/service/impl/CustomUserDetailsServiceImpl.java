@@ -5,7 +5,6 @@ import com.onlineauction.OnlineAuction.enums.Status;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
@@ -14,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -23,23 +21,21 @@ import java.util.Collections;
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public CustomUserDetailsServiceImpl(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+    public CustomUserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public void updateUserDetails(UserAccounts user) {
-        UserDetails userDetails = loadUserByUsername(user.getLogin());
+        loadUserByUsername(user.getLogin());
     }
 
     @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        UserAccounts userAccounts = userRepository.findByLogin(login);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserAccounts userAccounts = userRepository.findByLoginOrEmail(username);
         if (userAccounts == null) {
-            throw new UsernameNotFoundException("Пользваоетль с таким логином не найден: " + login);
+            throw new UsernameNotFoundException("Пользователь с таким логином или почтой не найден: " + username);
         }
 
         if (userAccounts.getStatus() == Status.BLOCKED) {

@@ -43,9 +43,6 @@ public class CategoryApiController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategoryName(@Valid @PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
-        if (categoryDTO.getNameCategory() == null || categoryDTO.getNameCategory().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Имя категории не может быть пустым");
-        }
         boolean updateResult = categoryService.updateCategoryName(id, categoryDTO.getNameCategory());
         return updateResult ?
                 ResponseEntity.ok().build() :
@@ -53,8 +50,9 @@ public class CategoryApiController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@Valid @PathVariable Long id) {
+    public ResponseEntity<?> deleteCategory(@Valid @PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 }
+

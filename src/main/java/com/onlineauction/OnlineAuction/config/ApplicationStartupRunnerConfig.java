@@ -30,12 +30,12 @@ public class ApplicationStartupRunnerConfig implements ApplicationRunner {
     private void createAdminIfNotExists() {
         if (!userRepository.existsByRole(Role.ADMIN)) {
             UserAccounts admin = new UserAccounts();
-            admin.setName("Матвей");
-            admin.setSurname("Марусик");
+            admin.setName("Администратор");
+            admin.setSurname("Администратор");
             admin.setLogin("admin");
             admin.setBirth_date(LocalDate.of(2004, 2, 3));
             admin.setEmail("admin_auction@gmail.com");
-            admin.setPassword(passwordEncoder.encode("Silich312"));
+            admin.setPassword(passwordEncoder.encode("admin159753"));
             admin.setRole(Role.ADMIN);
             admin.setStatus(Status.ACTIVE);
             userRepository.save(admin);

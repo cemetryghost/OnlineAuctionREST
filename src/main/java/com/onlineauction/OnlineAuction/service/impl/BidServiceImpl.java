@@ -31,22 +31,21 @@ public class BidServiceImpl implements BidService {
     private final LotRepository lotRepository;
     private final UserRepository userRepository;
     private final BidMapper bidMapper;
+    private final LotService lotService;
+    private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
     @Autowired
     public BidServiceImpl(BidRepository bidRepository, LotRepository lotRepository,
-                          UserRepository userRepository, BidMapper bidMapper) {
+                          UserRepository userRepository, BidMapper bidMapper, LotService lotService, CustomUserDetailsServiceImpl customUserDetailsServiceImpl) {
         this.bidRepository = bidRepository;
         this.lotRepository = lotRepository;
         this.userRepository = userRepository;
         this.bidMapper = bidMapper;
+        this.lotService = lotService;
+        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
     }
 
-    @Autowired
-    private LotService lotService;
-
-    @Autowired
-    private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
-
+    @Transactional
     @Override
     public List<BidDTO> getAllBids() {
         List<Bid> bids = bidRepository.findAll();
@@ -55,6 +54,7 @@ public class BidServiceImpl implements BidService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<BidDTO> getBidsByLotId(Long lotId) {
         List<Bid> bids = bidRepository.findByLotId(lotId);
@@ -63,7 +63,7 @@ public class BidServiceImpl implements BidService {
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional
     @Override
     public BidDTO getBidById(Long id) {
         return bidRepository.findById(id)
@@ -71,6 +71,7 @@ public class BidServiceImpl implements BidService {
                 .orElse(null);
     }
 
+    @Transactional
     @Override
     public BidDTO updateBid(Long id, BigDecimal newBidAmount) {
         Bid existingBid = bidRepository.findById(id)
@@ -97,6 +98,7 @@ public class BidServiceImpl implements BidService {
         return bidMapper.bidToBidDTO(existingBid);
     }
 
+    @Transactional
     @Override
     public void deleteBid(Long id) {
         bidRepository.findById(id)
@@ -104,7 +106,6 @@ public class BidServiceImpl implements BidService {
 
         bidRepository.deleteById(id);
     }
-
 
     @Transactional
     @Override
@@ -155,5 +156,4 @@ public class BidServiceImpl implements BidService {
             return bidDTO;
         }).collect(Collectors.toList());
     }
-
 }

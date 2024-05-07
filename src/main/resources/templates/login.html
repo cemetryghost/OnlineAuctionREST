@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Авторизация</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
-    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/style_login.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -15,10 +15,10 @@
                 <h2>Авторизация</h2>
             </div>
             <div class="card-body">
-                <form action="/auth/login" method="post">
+                <form id="loginForm" action="/auth/login" method="post">
                     <div id="error-message" class="error-message"></div>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="login" name="login" placeholder="Логин" required>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Логин или email" required>
                     </div>
                     <div class="form-group" style="position: relative;">
                         <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required>
@@ -31,29 +31,7 @@
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        const blocked = urlParams.get('blocked');
-
-        if (error) {
-            document.getElementById("error-message").innerText = "Неверный логин или пароль. Попробуйте снова.";
-            document.getElementById("error-message").style.display = 'block';
-        }
-        if (blocked) {
-            document.getElementById("error-message").innerText = "Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin123@gmail.com";
-            document.getElementById("error-message").style.display = 'block';
-        }
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-        togglePassword.addEventListener('click', () => {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            togglePassword.classList.toggle('bi-eye');
-            togglePassword.classList.toggle('bi-eye-slash');
-        });
-    });
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/login.js"></script>
 </body>
 </html>

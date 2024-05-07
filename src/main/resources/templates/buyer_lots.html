@@ -246,8 +246,8 @@
                     '<p><strong>Дата закрытия:</strong> ' + lot.closingDate + '</p>' +
                     '<p><strong>Состояние:</strong> ' + lot.conditionLots + '</p>' +
                     '<p><strong>Статус:</strong> ' + statusTranslations[lot.statusLots] + '</p>' +
-                    '<p><strong>Продавец:</strong> ' + lot.sellerDetails.name + ' ' + lot.sellerDetails.surname + '</p>' +
-                    '<p><strong>Покупатель:</strong> ' + (lot.buyerDetails ? lot.buyerDetails.firstName + ' ' + lot.buyerDetails.lastName : 'Неизвестно') + '</p>' +
+                    '<p><strong>Продавец:</strong> ' + lot.sellerDetails.name + ' ' + lot.sellerDetails.surname + ' - email - ' + lot.sellerDetails.email + '</p>' +
+                    '<p><strong>Покупатель:</strong> ' + (lot.buyerDetails ? (lot.buyerDetails.name + ' ' + lot.buyerDetails.surname) : 'Покупатель еще не назначен') + '</p>' +
                     '<hr>' +
                     '<p>Введите сумму ставки:</p>' +
                     '<input type="number" id="bidAmount" placeholder="Введите сумму ставки">' +

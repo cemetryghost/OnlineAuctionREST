@@ -175,6 +175,7 @@
                         <label for="editNameCategory">Название категории</label>
                         <input type="text" class="form-control" id="editNameCategory" name="nameCategory" required>
                     </div>
+                    <div id="editCategoryError" class="alert alert-danger" style="display: none;"></div> <!-- Добавлен блок с ошибкой -->
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Сохранить изменения</button>
@@ -183,6 +184,28 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Удалить категорию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить эту категорию?</p>
+                <div id="deleteCategoryError" class="alert alert-danger" style="display: none;"></div> <!-- Блок для отображения ошибки -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function() {
@@ -220,15 +243,16 @@
                 contentType: 'application/json',
                 data: JSON.stringify({ nameCategory: categoryName }),
                 success: function() {
-                    $('#addCategoryModal').modal('hide');
+                    $('#addCategoryModal').modal('hide'); // Закрыть модальное окно
                     $('#addNameCategory').val('');
                     $('#addCategoryError').hide();
                     refreshCategoryList();
                 },
                 error: function(xhr) {
                     if (xhr.status === 400) {
-                        var errorMessage = xhr.responseText;
-                        $('#addCategoryError').text(errorMessage).show();
+                        var errorResponse = JSON.parse(xhr.responseText); // Распарсить JSON-ответ
+                        var errorMessage = errorResponse.error; // Получить текст ошибки
+                        $('#addCategoryError').text(errorMessage).show(); // Отобразить сообщение об ошибке
                     } else {
                         alert("Произошла ошибка: " + xhr.statusText);
                     }
@@ -241,6 +265,12 @@
                 $('#editCategoryId').val(selectedCategory.id);
                 $('#editNameCategory').val(selectedCategory.nameCategory);
                 $('#editCategoryModal').modal('show');
+            }
+        });
+
+        $('#deleteButton').click(function() {
+            if(selectedCategory) {
+                $('#deleteCategoryModal').modal('show'); // Показать модальное окно для подтверждения удаления
             }
         });
 
@@ -260,12 +290,22 @@
                     $('#deleteButton').prop('disabled', true);
                     $('#categoriesTable tr').removeClass('table-primary');
                     refreshCategoryList();
+                },
+                error: function(xhr) {
+                    if (xhr.status === 400) {
+                        var errorResponse = JSON.parse(xhr.responseText); // Распарсить JSON-ответ
+                        var errorMessage = errorResponse.error; // Получить текст ошибки
+                        $('#editCategoryError').text(errorMessage).show(); // Отобразить сообщение об ошибке
+                    } else {
+                        alert("Произошла ошибка: " + xhr.statusText);
+                    }
                 }
+
             });
         });
 
-        $('#deleteButton').click(function() {
-            if(selectedCategory && confirm("Вы уверены, что хотите удалить эту категорию?")) {
+        $('#confirmDeleteButton').click(function() {
+            if(selectedCategory) {
                 $.ajax({
                     url: '/category/' + selectedCategory.id,
                     method: 'DELETE',
@@ -275,13 +315,19 @@
                         $('#deleteButton').prop('disabled', true);
                         $('#categoriesTable tr').removeClass('table-primary');
                         refreshCategoryList();
+                        $('#deleteCategoryModal').modal('hide'); // Закрыть модальное окно после успешного удаления
                     },
                     error: function(xhr) {
                         var errorMessage = xhr.responseText || "Произошла неизвестная ошибка";
-                        if(xhr.responseText.includes("Нарушает ограничение внешнего ключа")) {
-                            errorMessage = "Невозможно удалить категорию, так как она привязана к лоту";
+                        try {
+                            var errorObj = JSON.parse(errorMessage);
+                            if (errorObj && errorObj.error) {
+                                errorMessage = errorObj.error;
+                            }
+                        } catch (e) {
+                            // Игнорируем ошибку парсинга JSON
                         }
-                        alert(errorMessage);
+                        $('#deleteCategoryError').text(errorMessage).show(); // Отобразить сообщение об ошибке
                     }
                 });
             }

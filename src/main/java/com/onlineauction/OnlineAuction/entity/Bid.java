@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
@@ -21,11 +23,14 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "lot_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE) // Каскадное удаление
     private Lot lot;
 
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE) // Каскадное удаление
     private UserAccounts buyer;
+
 
     @Column(nullable = false)
     private BigDecimal bidAmount;

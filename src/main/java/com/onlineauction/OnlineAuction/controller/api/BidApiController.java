@@ -2,7 +2,6 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.service.BidService;
-import com.onlineauction.OnlineAuction.service.LotService;
 import com.onlineauction.OnlineAuction.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,16 +18,13 @@ import java.util.List;
 public class BidApiController {
 
     private final BidService bidService;
-    private final LotService lotService;
+    public final CustomUserDetailsServiceImpl customUserDetailsService;
 
     @Autowired
-    public BidApiController(BidService bidService, LotService lotService) {
+    public BidApiController(BidService bidService, CustomUserDetailsServiceImpl customUserDetailsService) {
         this.bidService = bidService;
-        this.lotService = lotService;
+        this.customUserDetailsService = customUserDetailsService;
     }
-
-    @Autowired
-    public CustomUserDetailsServiceImpl customUserDetailsService;
 
     @GetMapping
     public ResponseEntity<List<BidDTO>> getAllBids() {

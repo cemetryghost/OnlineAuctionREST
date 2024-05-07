@@ -6,11 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "lot", indexes = {
+        @Index(name = "idx_lot_name_lots", columnList = "name_lots")
+})
 @Data
 @Builder
 @NoArgsConstructor
@@ -49,11 +54,14 @@ public class Lot {
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserAccounts sellerId;
 
     @ManyToOne
     @JoinColumn(name = "current_buyer_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private UserAccounts currentBuyerId;
+
 
 }
 

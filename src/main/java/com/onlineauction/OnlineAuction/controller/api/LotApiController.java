@@ -67,7 +67,7 @@ public class LotApiController {
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<LotDTO> createLot(
             @RequestParam("lot") String lotStr,
-            @RequestParam(value = "static/image", required = false) MultipartFile image) {
+            @RequestParam(value = "image", required = false) MultipartFile image) {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -83,14 +83,13 @@ public class LotApiController {
     public ResponseEntity<LotDTO> updateLot(
             @PathVariable Long id,
             @RequestParam("lot") String lotStr,
-            @RequestParam(value = "static/image", required = false) MultipartFile image) {
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
             LotDTO lotDTO = objectMapper.readValue(lotStr, LotDTO.class);
             LotDTO updatedLot = lotService.updateLot(id, lotDTO, image);
             return ResponseEntity.ok(updatedLot);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

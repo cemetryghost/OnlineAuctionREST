@@ -149,7 +149,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                Вы уверены, что хотите удалить этого пользователя?
+                <p>Вы уверены, что хотите удалить этого пользователя?</p>
+                <p><strong>Внимание:</strong> Все связанные данные с этим пользователем также будут удалены.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
@@ -275,7 +276,7 @@
                 url: '/user/' + selectedUser + '/' + action,
                 method: 'POST',
                 success: function() {
-                    var statusCell = selectedRow.find('td:eq(4)');
+                    var statusCell = selectedRow.find('td:eq(5)');
                     statusCell.text(action === 'block' ? 'Заблокирован' : 'Активный');
                     $('#blockUserModal').modal('hide');
                     resetSelection();

@@ -39,6 +39,7 @@ public class UserAccounts {
     private LocalDate birth_date;
 
     @Email
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -48,5 +49,4 @@ public class UserAccounts {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
-
 }

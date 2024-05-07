@@ -7,7 +7,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">Online Auction</a>
+    <a class="navbar-brand">Online Auction</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -35,7 +35,7 @@
                 <a class="nav-link loadUserBids" href="#">Мои участия</a>
             </li>
         </ul>
-        <span class="navbar-text" th:text="${login}">
+        <span class="navbar-text" th:text="${#authentication.name}">
         </span>
         <ul class="navbar-nav">
             <li class="nav-item">

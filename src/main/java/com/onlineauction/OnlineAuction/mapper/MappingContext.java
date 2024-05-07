@@ -1,9 +1,11 @@
 package com.onlineauction.OnlineAuction.mapper;
 
 import com.onlineauction.OnlineAuction.repository.UserRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Component
 public class MappingContext {
     private final UserRepository userRepository;
@@ -13,8 +15,5 @@ public class MappingContext {
         this.userRepository = userRepository;
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
 }
 

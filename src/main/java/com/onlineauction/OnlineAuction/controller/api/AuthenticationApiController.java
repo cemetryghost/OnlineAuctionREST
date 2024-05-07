@@ -34,7 +34,7 @@ public class AuthenticationApiController {
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO) {
         try {
             authenticationService.registerNewUser(userDTO);
-            return ResponseEntity.ok(Map.of("message", "Пользователь зарегистрирован успешно"));
+            return ResponseEntity.ok(Map.of("message", "Пользователь зарегистрирован успешно!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

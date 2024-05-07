@@ -36,7 +36,7 @@ public class AdminWebController {
     }
 
     @GetMapping("/categories")
-    public String getAllCategories(Model model, Authentication authentication) {
+    public String getAllCategories(Model model) {
         List<CategoryDTO> categoryDTOList = categoryService.getAllCategories();
         model.addAttribute("categories", categoryDTOList);
         return "categories";

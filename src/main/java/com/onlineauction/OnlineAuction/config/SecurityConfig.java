@@ -1,7 +1,6 @@
 package com.onlineauction.OnlineAuction.config;
 
 import com.onlineauction.OnlineAuction.exception.CustomAuthenticationFailureHandler;
-import com.onlineauction.OnlineAuction.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,19 +19,16 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
-
     @Autowired
-    public SecurityConfig(CustomUserDetailsServiceImpl customUserDetailsServiceImpl) {
-        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
+    public SecurityConfig(CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
 
     @Bean
@@ -49,7 +45,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .usernameParameter("login")
+                        .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler(authenticationSuccessHandler())
                         .failureHandler(customAuthenticationFailureHandler)
@@ -76,4 +72,6 @@ public class SecurityConfig {
             }
         };
     }
+
+//    TODO: После проверки всего приложения, можно сделать регистрацию, минуя авторизацию
 }
