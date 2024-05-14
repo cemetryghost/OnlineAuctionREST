@@ -3,7 +3,6 @@ package com.onlineauction.OnlineAuction.service.impl;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.Status;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.LockedException;
@@ -16,7 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-@Slf4j
+
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
@@ -60,5 +59,4 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         }
         return null;
     }
-
 }

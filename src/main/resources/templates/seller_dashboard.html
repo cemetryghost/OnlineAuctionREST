@@ -17,15 +17,37 @@
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
-    function loadLots() {
-        $('#content').load('/products');
-    }
-    function loadCompletedLots() {
-        $('#content').load('/completed_lots');
-    }
+    $(document).ready(function() {
+        $('body').on('click', '.loadLots', function() {
+            loadLots();
+        });
+
+        $('body').on('click', '.loadCompletedLots', function() {
+            loadCompletedLots();
+        });
+
+        function loadLots() {
+            console.log('Загрузка лотов...');
+            $('#content').empty();
+            $('#content').load('/products', function(response, status, xhr) {
+                if (status == "error") {
+                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        }
+
+        function loadCompletedLots() {
+            console.log('Загрузка завершенных лотов...');
+            $('#content').empty();
+            $('#content').load('/completed_lots', function(response, status, xhr) {
+                if (status == "error") {
+                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>

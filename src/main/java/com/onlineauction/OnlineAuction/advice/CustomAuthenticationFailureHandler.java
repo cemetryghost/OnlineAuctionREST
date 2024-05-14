@@ -1,4 +1,4 @@
-package com.onlineauction.OnlineAuction.exception;
+package com.onlineauction.OnlineAuction.advice;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

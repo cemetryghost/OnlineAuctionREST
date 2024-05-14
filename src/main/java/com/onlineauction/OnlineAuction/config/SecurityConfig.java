@@ -1,6 +1,6 @@
 package com.onlineauction.OnlineAuction.config;
 
-import com.onlineauction.OnlineAuction.exception.CustomAuthenticationFailureHandler;
+import com.onlineauction.OnlineAuction.advice.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

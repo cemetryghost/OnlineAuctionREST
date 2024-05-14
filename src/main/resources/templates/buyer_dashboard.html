@@ -7,9 +7,19 @@
 <body>
 <div th:replace="blocks/header"></div>
 
-<div id="content"></div>
+<div id="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="mt-5">Добро пожаловать на платформу "Онлайн - Аукцион"</h1>
+                <p class="lead">Дальнейшие действия осуществляйте по кнопкам в шапке сайта</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="/js/lots.js"></script>
 <script>
     $(document).ready(function() {
         $('body').on('click', '.loadActiveLots', function() {

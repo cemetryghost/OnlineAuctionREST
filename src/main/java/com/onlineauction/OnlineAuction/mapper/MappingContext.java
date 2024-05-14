@@ -14,6 +14,5 @@ public class MappingContext {
     public MappingContext(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
 }
 

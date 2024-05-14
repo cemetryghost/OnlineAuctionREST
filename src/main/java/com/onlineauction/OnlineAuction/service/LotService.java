@@ -25,4 +25,5 @@ public interface LotService {
     void checkAndUpdateLotStatusDateClosing();
     void updateLotStatusesDateClosing();
     List<LotDTO> searchActiveLots(Long categoryId, String keyword);
+    void handleUserDeletion(Long userId);
 }

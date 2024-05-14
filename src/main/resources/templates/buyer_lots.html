@@ -5,7 +5,8 @@
     <title>Активные лоты</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script> <!-- Подключение Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <link href="/css/style_lots_card.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-3">
@@ -112,34 +113,6 @@
             });
         }
 
-        // function showLotDetails(lotId) {
-        //     console.log("Отработал ыерхний метод")
-        //     $.getJSON('/lots/' + lotId, function(lot) {
-        //         $.getJSON('/category/' + lot.categoryId, function(category) {
-        //             var modalBody = $('#lotDetailsBody');
-        //             modalBody.data('lot-id', lot.id); // Установка data-lot-id для modalBody
-        //             modalBody.empty(); // Очищаем содержимое модального окна перед добавлением новых элементов
-        //             modalBody.html(
-        //                 '<img src="' + (lot.hasImage ? '/lots/' + lot.id + '/image' : '/placeholder.jpg') + '" class="img-fluid mb-3" alt="Изображение лота">' +
-        //                 '<p><strong>Наименование:</strong> ' + lot.nameLots + '</p>' +
-        //                 '<p><strong>Категория:</strong> ' + category.nameCategory + '</p>' +
-        //                 '<p><strong>Описание:</strong> ' + lot.descriptionLots + '</p>' +
-        //                 '<p><strong>Стартовая цена:</strong> ' + lot.startPrice + '</p>' +
-        //                 '<p><strong>Текущая цена:</strong> ' + (lot.currentPrice != null ? lot.currentPrice : 'Ставки еще не сделаны') + '</p>' +
-        //                 '<p><strong>Шаг цены:</strong> ' + lot.stepPrice + '</p>' +
-        //                 '<p><strong>Дата публикации:</strong> ' + lot.publicationDate + '</p>' +
-        //                 '<p><strong>Дата закрытия:</strong> ' + lot.closingDate + '</p>' +
-        //                 '<p><strong>Состояние:</strong> ' + lot.conditionLots + '</p>' +
-        //                 '<p><strong>Статус:</strong> ' + statusTranslations[lot.statusLots] + '</p>' +
-        //                 '<hr>' +
-        //                 '<input type="number" id="bidAmount" class="form-control" placeholder="Введите сумму ставки">' +
-        //                 '<button type="button" class="btn btn-primary" id="placeBidButton">Сделать ставку</button>'
-        //             );
-        //             $('#lotDetailsModal').modal('show');
-        //         });
-        //     });
-        // }
-
         $('#categoryFilter').change(function() {
             var selectedCategory = $(this).val();
             var keyword = $('#searchKeyword').val().trim(); // Получаем текущее значение поля поиска
@@ -158,6 +131,7 @@
     }
 
     function loadActiveLots(categoryId = '', keyword = '') {
+        console.log("Отработал метод поиска и категории")
         var url = '/lots/active/search';
         var params = {};
 
@@ -199,17 +173,6 @@
         loadActiveLots(selectedCategory, keyword);
     });
 
-    // function filterUserBids(lots, callback) {
-    //     $.getJSON('/bids/my', function(userBids) {
-    //         var filteredLots = lots.filter(function(lot) {
-    //             return !userBids.some(function(bid) {
-    //                 return bid.lotId === lot.id;
-    //             });
-    //         });
-    //         callback(filteredLots);
-    //     });
-    // }
-
     function buildLotCard(lot) {
         return '<div class="col-md-4">' +
             '<div class="card">' +
@@ -225,7 +188,7 @@
     }
 
     function showLotDetails(lotId, lots) {
-        console.log("Отработал нижиний метод")
+        console.log("Отработал метод просто посика по категории")
         var lot = lots.find(function(item) {
             return item.id === lotId;
         });
@@ -257,7 +220,6 @@
             });
         }
     }
-
 </script>
 </body>
 </html>

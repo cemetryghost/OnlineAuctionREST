@@ -1,0 +1,103 @@
+body {
+    background-color: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+h2 {
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.btn-group > .btn {
+    margin-right: 10px;
+}
+.btn-group > .btn:last-child {
+    margin-right: 0;
+}
+.btn {
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+.btn-primary {
+    background: #6c7ae0;
+}
+.btn-primary:hover {
+    background: #5a6abe;
+}
+.btn-secondary {
+    background: #34495e; /* New secondary color */
+}
+.btn-secondary:hover {
+    background: #2c3e50; /* Darker shade for hover state */
+}
+.btn-danger {
+    background: #e06c75; /* New danger color */
+}
+.btn-danger:hover {
+    background: #c05560; /* Darker shade for hover state */
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+.table th {
+    background-color: #f8f9fa;
+    color: #333;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+}
+.table tbody tr:hover {
+    background-color: #eaeaea;
+}
+.modal-content {
+    border-radius: 12px;
+}
+.modal-header {
+    border-bottom: 1px solid #eeeeee;
+    background: #f8f9fa;
+}
+.modal-title {
+    font-weight: bold;
+    color: #333;
+}
+.modal-footer {
+    border-top: 1px solid #eeeeee;
+}
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+}
+.form-control:focus {
+    border-color: #6c7ae0;
+    box-shadow: 0 0 0 2px rgba(108, 122, 224, 0.25);
+}
+.close {
+    outline: none;
+}

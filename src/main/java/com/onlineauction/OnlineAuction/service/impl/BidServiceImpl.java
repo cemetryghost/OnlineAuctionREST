@@ -6,6 +6,7 @@ import com.onlineauction.OnlineAuction.entity.Bid;
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
+import com.onlineauction.OnlineAuction.exception.BidException;
 import com.onlineauction.OnlineAuction.mapper.BidMapper;
 import com.onlineauction.OnlineAuction.repository.BidRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
@@ -13,18 +14,17 @@ import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.BidService;
 import com.onlineauction.OnlineAuction.service.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Validated
+@Transactional
 public class BidServiceImpl implements BidService {
 
     private final BidRepository bidRepository;
@@ -44,26 +44,17 @@ public class BidServiceImpl implements BidService {
         this.lotService = lotService;
         this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
     }
-
-    @Transactional
+    
     @Override
     public List<BidDTO> getAllBids() {
-        List<Bid> bids = bidRepository.findAll();
-        return bids.stream()
-                .map(bidMapper::bidToBidDTO)
-                .collect(Collectors.toList());
+        return mapBidListToDTOList(bidRepository.findAll());
     }
 
-    @Transactional
     @Override
     public List<BidDTO> getBidsByLotId(Long lotId) {
-        List<Bid> bids = bidRepository.findByLotId(lotId);
-        return bids.stream()
-                .map(bidMapper::bidToBidDTO)
-                .collect(Collectors.toList());
+        return mapBidListToDTOList(bidRepository.findByLotId(lotId));
     }
-
-    @Transactional
+    
     @Override
     public BidDTO getBidById(Long id) {
         return bidRepository.findById(id)
@@ -71,24 +62,13 @@ public class BidServiceImpl implements BidService {
                 .orElse(null);
     }
 
-    @Transactional
     @Override
     public BidDTO updateBid(Long id, BigDecimal newBidAmount) {
-        Bid existingBid = bidRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Ставка с таким id не найдена: " + id));
+        Bid existingBid = getBidByIdOrElseThrow(id);
 
         Lot lot = existingBid.getLot();
-        if (!lot.getStatusLots().equals(StatusLot.ACTIVE_LOT)) {
-            throw new IllegalStateException("Ставку можно повышать только на активные лоты");
-        }
-
-        BigDecimal currentPrice = lot.getCurrentPrice();
-        BigDecimal stepPrice = lot.getStepPrice();
-        BigDecimal newBidTotalAmount = currentPrice.add(stepPrice);
-
-        if (newBidAmount.compareTo(newBidTotalAmount) < 0) {
-            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шаг");
-        }
+        checkLotStatus(lot);
+        validateBidForUpdate(lot, newBidAmount);
 
         existingBid.setBidAmount(newBidAmount);
         existingBid = bidRepository.save(existingBid);
@@ -98,58 +78,91 @@ public class BidServiceImpl implements BidService {
         return bidMapper.bidToBidDTO(existingBid);
     }
 
-    @Transactional
     @Override
     public void deleteBid(Long id) {
-        bidRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Ставка с таким id не найдена: " + id));
-
-        bidRepository.deleteById(id);
+        Bid existingBid = getBidByIdOrElseThrow(id);
+        bidRepository.delete(existingBid);
     }
 
-    @Transactional
     @Override
     public BidDTO placeBid(BidDTO bidDTO) {
-        Optional<Lot> lotOptional = lotRepository.findById(bidDTO.getLotId());
-        if (lotOptional.isEmpty()) {
-            throw new IllegalArgumentException("Лот не найден");
-        }
-        Lot lot = lotOptional.get();
+        Lot lot = getLotByIdOrElseThrow(bidDTO.getLotId());
+        checkLotStatus(lot);
+        BigDecimal minimumBidAmount = calculateMinimumBidAmount(lot);
 
-        BigDecimal minimumBidAmount = lot.getCurrentPrice() != null ? lot.getCurrentPrice().add(lot.getStepPrice()) : lot.getStartPrice().add(lot.getStepPrice());
-        if (bidDTO.getBidAmount().compareTo(minimumBidAmount) < 0) {
-            throw new IllegalArgumentException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага");
-        }
+        validateBidForPlacement(bidDTO, minimumBidAmount);
 
-        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
-        UserAccounts buyer = userRepository.findByLogin(currentUserLogin);
-        if (buyer == null) {
-            throw new UsernameNotFoundException("Пользователь не найден");
-        }
-
+        UserAccounts buyer = getCurrentUserOrThrow();
         Bid bid = bidMapper.BidDTOtoBid(bidDTO);
         bid.setLot(lot);
         bid.setBuyer(buyer);
 
         bid = bidRepository.save(bid);
 
-        lot.setCurrentPrice(bidDTO.getBidAmount());
-        lot.setCurrentBuyerId(buyer);
-        lotRepository.save(lot);
+        updateLotAfterBidPlacement(lot, bidDTO.getBidAmount(), buyer);
 
         return bidMapper.bidToBidDTO(bid);
     }
 
-    @Transactional
     @Override
     public List<BidDTO> getMyBidsWithLotDetails() {
-        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
-        UserAccounts buyer = userRepository.findByLogin(currentUserLogin);
-        if (buyer == null) {
-            throw new UsernameNotFoundException("Пользователь не найден");
-        }
+        UserAccounts buyer = getCurrentUserOrThrow();
         List<Bid> myBids = bidRepository.findByBuyerId(buyer.getId());
-        return myBids.stream().map(bid -> {
+        return mapBidListToDTOListWithLotDetails(myBids);
+    }
+
+    private List<BidDTO> mapBidListToDTOList(List<Bid> bids) {
+        return bids.stream()
+                .map(bidMapper::bidToBidDTO)
+                .collect(Collectors.toList());
+    }
+
+    private Bid getBidByIdOrElseThrow(Long id) {
+        return bidRepository.findById(id)
+                .orElseThrow(() -> new BidException("Ставка с таким id не найдена: " + id));
+    }
+
+    private Lot getLotByIdOrElseThrow(Long lotId) {
+        return lotRepository.findById(lotId)
+                .orElseThrow(() -> new BidException("Лот с таким id не найден: " + lotId));
+    }
+
+    private BigDecimal calculateMinimumBidAmount(Lot lot) {
+        return lot.getCurrentPrice() != null ? lot.getCurrentPrice().add(lot.getStepPrice()) : lot.getStartPrice().add(lot.getStepPrice());
+    }
+
+    private void validateBidForUpdate(Lot lot, BigDecimal newBidAmount) {
+        BigDecimal newBidTotalAmount = lot.getCurrentPrice().add(lot.getStepPrice());
+        if (newBidAmount.compareTo(newBidTotalAmount) < 0) {
+            throw new BidException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага");
+        }
+    }
+
+    private void checkLotStatus(Lot lot) {
+        if (!lot.getStatusLots().equals(StatusLot.ACTIVE_LOT)) {
+            throw new BidException("Ставку можно повышать или размещать только на активные лоты");
+        }
+    }
+
+    private void validateBidForPlacement(BidDTO bidDTO, BigDecimal minimumBidAmount) {
+        if (bidDTO.getBidAmount().compareTo(minimumBidAmount) < 0) {
+            throw new BidException("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага");
+        }
+    }
+
+    private UserAccounts getCurrentUserOrThrow() {
+        String currentUserLogin = customUserDetailsServiceImpl.getCurrentUserLogin();
+        return userRepository.findByLogin(currentUserLogin);
+    }
+
+    private void updateLotAfterBidPlacement(Lot lot, BigDecimal newBidAmount, UserAccounts buyer) {
+        lot.setCurrentPrice(newBidAmount);
+        lot.setCurrentBuyerId(buyer);
+        lotRepository.save(lot);
+    }
+
+    private List<BidDTO> mapBidListToDTOListWithLotDetails(List<Bid> bids) {
+        return bids.stream().map(bid -> {
             BidDTO bidDTO = bidMapper.bidToBidDTO(bid);
             LotDTO lotDTO = lotService.getLotById(bid.getLot().getId());
             bidDTO.setLotDTO(lotDTO);
@@ -157,3 +170,4 @@ public class BidServiceImpl implements BidService {
         }).collect(Collectors.toList());
     }
 }
+

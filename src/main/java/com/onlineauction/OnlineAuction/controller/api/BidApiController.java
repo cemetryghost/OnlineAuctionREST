@@ -2,9 +2,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.service.BidService;
-import com.onlineauction.OnlineAuction.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +16,10 @@ import java.util.List;
 public class BidApiController {
 
     private final BidService bidService;
-    public final CustomUserDetailsServiceImpl customUserDetailsService;
 
     @Autowired
-    public BidApiController(BidService bidService, CustomUserDetailsServiceImpl customUserDetailsService) {
+    public BidApiController(BidService bidService) {
         this.bidService = bidService;
-        this.customUserDetailsService = customUserDetailsService;
     }
 
     @GetMapping
@@ -64,12 +60,8 @@ public class BidApiController {
 
     @GetMapping("/my")
     public ResponseEntity<List<BidDTO>> getMyBidsWithLotDetails() {
-        try {
-            List<BidDTO> bidsWithLotDetails = bidService.getMyBidsWithLotDetails();
-            return ResponseEntity.ok(bidsWithLotDetails);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<BidDTO> bidsWithLotDetails = bidService.getMyBidsWithLotDetails();
+        return ResponseEntity.ok(bidsWithLotDetails);
     }
 }
 
