@@ -1,4 +1,4 @@
-package com.onlineauction.OnlineAuction.controller.api;
+package com.onlineauction.OnlineAuction.controller.web;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
 import com.onlineauction.OnlineAuction.service.UserService;
@@ -15,18 +15,18 @@ import java.util.Map;
 @AllArgsConstructor
 @RequestMapping("/auth")
 @Validated
-public class AuthenticationApiController {
+public class AuthenticationWebController {
 
     private final UserService authenticationService;
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return "/page_auth/login";
     }
 
     @GetMapping("/register")
     public String showRegistrationForm() {
-        return "registration";
+        return "/page_auth/registration";
     }
 
     @PostMapping("/register")

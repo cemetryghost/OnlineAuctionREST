@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Seller Dashboard</title>
+    <title>Buyer Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -17,33 +17,41 @@
         </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="/js/lots.js"></script>
 <script>
     $(document).ready(function() {
-        $('body').on('click', '.loadLots', function() {
-            loadLots();
+        var userRole = 'ROLE_BUYER';
+
+        $('body').on('click', '.loadActiveLots', function() {
+            loadActiveLots();
         });
 
-        $('body').on('click', '.loadCompletedLots', function() {
-            loadCompletedLots();
+        $('body').on('click', '.loadUserBids', function() {
+            loadUserBids();
         });
 
-        function loadLots() {
-            console.log('Загрузка лотов...');
+        function loadActiveLots() {
+            console.log('Загрузка активных лотов...');
             $('#content').empty();
-            $('#content').load('/products', function(response, status, xhr) {
+            $('#content').load('/buyer_lots', function(response, status, xhr) {
                 if (status == "error") {
                     console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    $('body').attr('data-page-type', 'activeLots'); // Устанавливаем pageType после загрузки
                 }
             });
         }
 
-        function loadCompletedLots() {
-            console.log('Загрузка завершенных лотов...');
+        function loadUserBids() {
+            console.log('Загрузка моих участий...');
             $('#content').empty();
-            $('#content').load('/completed_lots', function(response, status, xhr) {
+            $('#content').load('/my_bids', function(response, status, xhr) {
                 if (status == "error") {
                     console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    $('body').attr('data-page-type', 'userBids');
                 }
             });
         }

@@ -16,7 +16,7 @@ public class SellerWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "seller_dashboard";
+        return "/dashboard/seller_dashboard";
     }
 
     @GetMapping("/completed_lots")
@@ -25,6 +25,6 @@ public class SellerWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "completed_lots"; // Возвращаем имя HTML-шаблона для страницы завершенных лотов
+        return "/page_seller/completed_lots";
     }
 }

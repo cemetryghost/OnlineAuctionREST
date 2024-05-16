@@ -49,15 +49,15 @@
                     </div>
                     <div class="form-group">
                         <label for="startPrice">Стартовая цена</label>
-                        <input type="number" class="form-control" id="startPrice" required>
+                        <input type="number" class="form-control" id="startPrice" min="1" required>
                     </div>
                     <div class="form-group">
                         <label for="stepPrice">Шаг цены</label>
-                        <input type="number" class="form-control" id="stepPrice" required>
+                        <input type="number" class="form-control" id="stepPrice" min="1" required>
                     </div>
                     <div class="form-group">
                         <label for="closingDate">Дата закрытия</label>
-                        <input type="date" class="form-control" id="closingDate" required>
+                        <input type="date" class="form-control" id="closingDate" placeholder="Выберите дату" required>
                     </div>
                     <div class="form-group">
                         <label for="conditionLots">Состояние</label>
@@ -66,7 +66,6 @@
                     <div class="form-group">
                         <label for="category">Категория</label>
                         <select class="form-control" id="category" required>
-
                         </select>
                     </div>
                     <div class="form-group">
@@ -75,6 +74,25 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lotCreationSuccessModal" tabindex="-1" role="dialog" aria-labelledby="lotCreationSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lotCreationSuccessModalLabel">Лот успешно создан</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Лот был успешно добавлен на платформу.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -119,15 +137,15 @@
                     </div>
                     <div class="form-group">
                         <label for="editLotStartPrice">Стартовая цена</label>
-                        <input type="number" class="form-control" id="editLotStartPrice" name="startPrice">
+                        <input type="number" class="form-control" id="editLotStartPrice" name="startPrice" min="1">
                     </div>
                     <div class="form-group">
                         <label for="editLotStepPrice">Шаг цены</label>
-                        <input type="number" class="form-control" id="editLotStepPrice" name="stepPrice">
+                        <input type="number" class="form-control" id="editLotStepPrice" name="stepPrice" min="1">
                     </div>
                     <div class="form-group">
                         <label for="editLotClosingDate">Дата закрытия</label>
-                        <input type="date" class="form-control" id="editLotClosingDate" name="closingDate">
+                        <input type="date" class="form-control" id="editLotClosingDate" name="closingDate" placeholder="Выберите дату">
                     </div>
                     <div class="form-group">
                         <label for="editLotCondition">Состояние</label>
@@ -321,8 +339,6 @@
         </div>
     </div>
 </div>
-
-
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="/js/lots.js"></script>

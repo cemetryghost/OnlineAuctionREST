@@ -14,7 +14,7 @@ public class AdminWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "admin_dashboard";
+        return "/dashboard/admin_dashboard";
     }
 
     @GetMapping("/categories")
@@ -23,7 +23,7 @@ public class AdminWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "categories";
+        return "/page_admin/categories";
     }
 
     @GetMapping("/products")
@@ -32,7 +32,7 @@ public class AdminWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "products";
+        return "/page_seller/products";
     }
 
     @GetMapping("/accounts")
@@ -41,7 +41,7 @@ public class AdminWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "accounts";
+        return "/page_admin/accounts";
     }
 }
 

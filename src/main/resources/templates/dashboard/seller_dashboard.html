@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Buyer Dashboard</title>
+    <title>Seller Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -17,33 +17,29 @@
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="/js/lots.js"></script>
 <script>
     $(document).ready(function() {
-        $('body').on('click', '.loadActiveLots', function() {
-            loadActiveLots();
+        $('body').on('click', '.loadLots', function() {
+            loadLots();
         });
 
-        $('body').on('click', '.loadUserBids', function() {
-            loadUserBids();
+        $('body').on('click', '.loadCompletedLots', function() {
+            loadCompletedLots();
         });
 
-        function loadActiveLots() {
-            console.log('Загрузка активных лотов...');
+        function loadLots() {
             $('#content').empty();
-            $('#content').load('/buyer_lots', function(response, status, xhr) {
+            $('#content').load('/products', function(response, status, xhr) {
                 if (status == "error") {
                     console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
                 }
             });
         }
 
-        function loadUserBids() {
-            console.log('Загрузка моих участий...');
+        function loadCompletedLots() {
             $('#content').empty();
-            $('#content').load('/my_bids', function(response, status, xhr) {
+            $('#content').load('/completed_lots', function(response, status, xhr) {
                 if (status == "error") {
                     console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
                 }

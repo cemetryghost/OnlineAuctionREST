@@ -15,6 +15,7 @@ public interface LotService {
     LotDTO updateLot(Long id, LotDTO lotDTO, MultipartFile image) throws IOException;
     void deleteLot(Long id);
     void uploadImage(Long lotId, MultipartFile file) throws IOException;
+    byte[] getLotImage(Long lotId);
     List<LotDTO> getLotsByCategoryId(Long categoryId);
     LotDTO updateLotStatus(Long id, StatusLot newStatus);
     List<LotDTO> getLotsBySellerId(Long sellerId);

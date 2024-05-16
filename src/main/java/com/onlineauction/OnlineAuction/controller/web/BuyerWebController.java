@@ -16,7 +16,7 @@ public class BuyerWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "buyer_dashboard";
+        return "/dashboard/buyer_dashboard";
     }
 
     @GetMapping("/buyer_lots")
@@ -25,7 +25,7 @@ public class BuyerWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "buyer_lots";
+        return "/page_buyer/buyer_lots";
     }
 
     @GetMapping("/my_bids")
@@ -34,7 +34,7 @@ public class BuyerWebController {
             model.addAttribute("role", authentication.getAuthorities().iterator().next().getAuthority());
             model.addAttribute("login", authentication.getName());
         }
-        return "my_bids";
+        return "/page_buyer/my_bids";
     }
 }
 

@@ -2,9 +2,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
-import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
-import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +23,11 @@ import java.util.List;
 public class LotApiController {
 
     private final LotService lotService;
-    private final LotRepository lotRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public LotApiController(LotService lotService, LotRepository lotRepository, ObjectMapper objectMapper) {
+    public LotApiController(LotService lotService, ObjectMapper objectMapper) {
         this.lotService = lotService;
-        this.lotRepository = lotRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -42,9 +38,7 @@ public class LotApiController {
     }
 
     @GetMapping("/active/search")
-    public ResponseEntity<List<LotDTO>> searchActiveLots(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Long categoryId) {
+    public ResponseEntity<List<LotDTO>> searchActiveLots(@RequestParam(required = false) String keyword, @RequestParam(required = false) Long categoryId) {
         List<LotDTO> lots = lotService.searchActiveLots(categoryId, keyword);
         return ResponseEntity.ok(lots);
     }
@@ -52,23 +46,18 @@ public class LotApiController {
     @GetMapping("/{id}")
     public ResponseEntity<LotDTO> getLotById(@PathVariable Long id) {
         LotDTO lotDTO = lotService.getLotById(id);
-        return lotDTO != null ? ResponseEntity.ok(lotDTO) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(lotDTO);
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<LotDTO> createLot(
-            @RequestParam("lot") @Valid String lotStr,
-            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<LotDTO> createLot(@RequestParam("lot") @Valid String lotStr, @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         LotDTO lotDTO = objectMapper.readValue(lotStr, LotDTO.class);
         LotDTO createdLot = lotService.createLot(lotDTO, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLot);
     }
 
     @PutMapping(path = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<LotDTO> updateLot(
-            @PathVariable Long id,
-            @RequestParam("lot") @Valid String lotStr,
-            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<LotDTO> updateLot(@PathVariable Long id, @RequestParam("lot") @Valid String lotStr, @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         LotDTO lotDTO = objectMapper.readValue(lotStr, LotDTO.class);
         LotDTO updatedLot = lotService.updateLot(id, lotDTO, image);
         return ResponseEntity.ok(updatedLot);
@@ -81,26 +70,17 @@ public class LotApiController {
     }
 
     @PostMapping("/{lotId}/image")
-    public ResponseEntity<?> uploadImage(@PathVariable Long lotId, @RequestParam("image") MultipartFile image) {
-        try {
-            lotService.uploadImage(lotId, image);
-            return ResponseEntity.ok("Изображение успешно загружено");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Ошибка загрузки изображения");
-        }
+    public ResponseEntity<String> uploadImage(@PathVariable Long lotId, @RequestParam("image") MultipartFile image) throws IOException {
+        lotService.uploadImage(lotId, image);
+        return ResponseEntity.ok("Изображение успешно загружено");
     }
 
     @GetMapping("/{lotid}/image")
     public ResponseEntity<byte[]> getLotImage(@PathVariable Long lotid) {
-        Lot lot = lotRepository.findById(lotid)
-                .orElseThrow(() -> new IllegalArgumentException("Лот не найден"));
-
-        if (lot.getImage() == null) {
-            return ResponseEntity.notFound().build();
-        }
+        byte[] image = lotService.getLotImage(lotid);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<>(lot.getImage(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
 
     @GetMapping("/category/{categoryId}")
@@ -112,7 +92,7 @@ public class LotApiController {
     @PutMapping("/{id}/status")
     public ResponseEntity<LotDTO> updateLotStatus(@PathVariable Long id, @RequestParam StatusLot newStatus) {
         LotDTO updatedLot = lotService.updateLotStatus(id, newStatus);
-        return updatedLot != null ? ResponseEntity.ok(updatedLot) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedLot);
     }
 
     @GetMapping("/my")
@@ -137,7 +117,4 @@ public class LotApiController {
         List<LotDTO> activeLots = lotService.getActiveLotsByCategoryId(categoryId);
         return ResponseEntity.ok(activeLots);
     }
-
-//    TODO: На стороне сервера, остался рефакторинг только для лотов (Сервис и Контроллер). Только полсе того, как приложение будет работать корректно
-//    TODO: Провести рефакторинг клиента, после полной корректности работы веба
 }

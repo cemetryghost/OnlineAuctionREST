@@ -61,7 +61,5 @@ public class Lot {
     @JoinColumn(name = "current_buyer_id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private UserAccounts currentBuyerId;
-
-
 }
 

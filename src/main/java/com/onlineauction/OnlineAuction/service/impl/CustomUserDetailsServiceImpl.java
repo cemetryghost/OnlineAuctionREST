@@ -38,7 +38,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         }
 
         if (userAccounts.getStatus() == Status.BLOCKED) {
-            throw new LockedException("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin123@gmail.com");
+            throw new LockedException("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin_auction@gmail.com");
         }
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userAccounts.getRole().name());

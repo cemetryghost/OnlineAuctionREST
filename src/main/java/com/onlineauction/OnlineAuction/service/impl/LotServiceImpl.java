@@ -308,11 +308,21 @@ public class LotServiceImpl implements LotService {
         return repository.findById(id).orElseThrow(() -> new LotException(errorMessage));
     }
 
+    @Override
     public void uploadImage(Long lotId, MultipartFile file) throws IOException {
         Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new LotException("Лот не найден"));
         byte[] imageBytes = file.getBytes();
         lot.setImage(imageBytes);
         lotRepository.save(lot);
+    }
+
+    @Override
+    public byte[] getLotImage(Long lotId) {
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new LotException("Лот не найден"));
+        if (lot.getImage() == null) {
+            throw new LotException("Изображение не найдено");
+        }
+        return lot.getImage();
     }
 
     @Override

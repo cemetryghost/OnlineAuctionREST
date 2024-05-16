@@ -73,9 +73,14 @@ public class BidServiceImpl implements BidService {
         existingBid.setBidAmount(newBidAmount);
         existingBid = bidRepository.save(existingBid);
         lot.setCurrentPrice(newBidAmount);
-        lotRepository.save(lot);
 
-        return bidMapper.bidToBidDTO(existingBid);
+        updateLotAfterBidPlacement(lot, newBidAmount, existingBid.getBuyer());
+
+        BidDTO updatedBidDTO = bidMapper.bidToBidDTO(existingBid);
+        LotDTO lotDTO = lotService.getLotById(lot.getId());
+        updatedBidDTO.setLotDTO(lotDTO);
+
+        return updatedBidDTO;
     }
 
     @Override
@@ -101,7 +106,11 @@ public class BidServiceImpl implements BidService {
 
         updateLotAfterBidPlacement(lot, bidDTO.getBidAmount(), buyer);
 
-        return bidMapper.bidToBidDTO(bid);
+        BidDTO newBidDTO = bidMapper.bidToBidDTO(bid);
+        LotDTO lotDTO = lotService.getLotById(lot.getId());
+        newBidDTO.setLotDTO(lotDTO);
+
+        return newBidDTO;
     }
 
     @Override

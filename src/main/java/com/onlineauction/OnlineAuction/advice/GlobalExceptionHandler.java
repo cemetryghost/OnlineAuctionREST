@@ -7,6 +7,7 @@ import com.onlineauction.OnlineAuction.exception.UserException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -65,6 +66,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<?> handleUsernameNotFoundException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("Пользователь не найден"));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("У вас нет досутпа к ресурсу"));
     }
 
     private Map<String, String> errorResponse(String errorMessage) {
