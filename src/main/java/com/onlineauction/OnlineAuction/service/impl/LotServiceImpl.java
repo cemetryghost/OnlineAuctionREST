@@ -358,6 +358,4 @@ public class LotServiceImpl implements LotService {
         lot.setCurrentBuyerId(null);
         lot.setCurrentPrice(null);
     }
-
-//    TODO: Flatpickr для лота на клиенте
 }
