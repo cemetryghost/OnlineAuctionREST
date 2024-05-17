@@ -9,7 +9,7 @@ import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.exception.LotException;
 import com.onlineauction.OnlineAuction.mapper.LotMapper;
-import com.onlineauction.OnlineAuction.mapper.MappingContext;
+import com.onlineauction.OnlineAuction.mapper.context.MappingContext;
 import com.onlineauction.OnlineAuction.repository.BidRepository;
 import com.onlineauction.OnlineAuction.repository.CategoryRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;

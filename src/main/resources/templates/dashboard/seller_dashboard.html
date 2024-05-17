@@ -1,8 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Seller Dashboard</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .rule {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        .rule p {
+            font-size: 20px;
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="blocks/header"></div>
@@ -12,7 +39,32 @@
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
                 <h1 class="mt-5">Добро пожаловать на платформу "Онлайн - Аукцион"</h1>
-                <p class="lead">Дальнейшие действия осуществляйте по кнопкам в шапке сайта</p>
+                <p class="lead">Дальнейшие действия осуществляются по кнопкам в шапке сайта</p>
+                <p class="lead"></p>
+                <h2 class="mt-5">Правила продавца на платформе:</h2>
+                <div class="rule">
+                    <p><strong>1. Честность и точность описания товара:</strong> При размещении лота продавец обязан предоставить полное и точное описание товара.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>2. Изображение товара:</strong> Если продавец желает добавить изображение к лоту, то оно должно быть реальным.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>3. Добавление лота:</strong> При добавления нового лота продавцом,заявка отправляется администратору на проверку, затем если лот корректен, он появляется на странице покупателей.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>4.Редактирование и удаление лота:</strong> Редактирование и удаление лота возможно только в случае, если покупатели еще не сделали ставки на товар.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>5. Заврешение лота:</strong> Досрочное завершение лота, разрешается только на активные лоты.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>6. Ответственность за поддержание коммуникации:</strong> Продавец должен оперативно отвечать покупателю или администратору, для продавжи завершенного лота.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>7. Блокировка и удаление аккаунта:</strong> При размещении лота на платформу, убедитесь в его законности и корректности. <strong>Неоднократные нарушения приведут к блокировки аккаунта. Неоднократные нарушения приводят к полному удалениб аккаунта без возможности восстановления!</strong></p>
+                </div>
+                <p class="lead"></p>
+                <h4 class="mt-4">По интересующим вопросам, вы можете связаться с администратором по эл.почте: admin_auction@gmail.com</h4>
             </div>
         </div>
     </div>

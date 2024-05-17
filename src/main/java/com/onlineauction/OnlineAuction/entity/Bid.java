@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bid {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_bids")
@@ -23,12 +24,12 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "lot_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE) // Каскадное удаление
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Lot lot;
 
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE) // Каскадное удаление
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserAccounts buyer;
 
 

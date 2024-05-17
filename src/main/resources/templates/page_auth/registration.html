@@ -30,6 +30,9 @@
             <div class="form-group">
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
             </div>
+            <div class="form-group" id="verificationCodeGroup" style="display: none;">
+                <input type="text" class="form-control" id="verification_code" name="verification_code" placeholder="Код подтверждения">
+            </div>
             <div class="form-group" style="position: relative;">
                 <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required minlength="8" oninput="checkPasswordMatch()">
                 <i class="bi bi-eye-slash" style="position: absolute; right: 15px; top: 45%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword('password')"></i>
@@ -56,7 +59,7 @@
                     <label class="form-check-label" for="buyer">Покупатель</label>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+            <button type="submit" id="registerButton" class="btn btn-primary btn-block">Зарегистрироваться</button>
             <p class="text-center mt-3 mb-0"><a href="/auth/login" class="btn-link">Войти</a></p>
         </form>
     </div>

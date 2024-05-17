@@ -1,5 +1,6 @@
 package com.onlineauction.OnlineAuction.advice;
 
+import com.onlineauction.OnlineAuction.exception.UserNotConfirmedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.LockedException;
@@ -19,6 +20,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         String redirectURL = "/auth/login?error=true";
         if (exception.getCause() instanceof LockedException) {
             redirectURL = "/auth/login?blocked=true";
+        } else if (exception.getCause() instanceof UserNotConfirmedException) {
+            redirectURL = "/auth/login?unconfirmed=true";
         }
         response.sendRedirect(redirectURL);
     }

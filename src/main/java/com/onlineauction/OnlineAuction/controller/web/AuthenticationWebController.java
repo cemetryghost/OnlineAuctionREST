@@ -1,7 +1,11 @@
 package com.onlineauction.OnlineAuction.controller.web;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
+import com.onlineauction.OnlineAuction.exception.UserException;
+import com.onlineauction.OnlineAuction.repository.UserRepository;
+import com.onlineauction.OnlineAuction.service.TemporaryUserStorageService;
 import com.onlineauction.OnlineAuction.service.UserService;
+import com.onlineauction.OnlineAuction.service.VerificationCodeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +21,8 @@ import java.util.Map;
 @Validated
 public class AuthenticationWebController {
 
-    private final UserService authenticationService;
+    private final UserService userService;
+
 
     @GetMapping("/login")
     public String showLoginForm() {
@@ -33,10 +38,10 @@ public class AuthenticationWebController {
     @ResponseBody
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO) {
         try {
-            authenticationService.registerNewUser(userDTO);
-            return ResponseEntity.ok(Map.of("message", "Пользователь зарегистрирован успешно!"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            Map<String, String> response = userService.register(userDTO);
+            return ResponseEntity.ok(response);
+        } catch (UserException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
     }
 }

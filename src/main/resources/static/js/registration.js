@@ -19,7 +19,6 @@ $(document).ready(function() {
         maxDate: "today",
         altInput: true,
         altFormat: "F j, Y",
-        dateFormat: "Y-m-d",
         appendTo: document.getElementById('birth_date').parentNode
     });
 
@@ -31,6 +30,7 @@ $(document).ready(function() {
 
         if (password !== confirmPassword) {
             $('#error-message').text('Пароли не совпадают!').show();
+            $('#success-message').hide();
             return false;
         }
 
@@ -46,28 +46,56 @@ $(document).ready(function() {
 
         if (!formData.birth_date) {
             $('#error-message').text('Пожалуйста, выберите дату рождения').show();
+            $('#success-message').hide();
             return;
         }
         if (!formData.email) {
             $('#error-message').text('Пожалуйста, введите ваш email').show();
+            $('#success-message').hide();
             return;
         }
+
+        if ($('#verificationCodeGroup').is(':visible')) {
+            formData.verificationCode = $('#verification_code').val();
+            if (!formData.verificationCode) {
+                $('#error-message').text('Пожалуйста, введите код подтверждения').show();
+                $('#success-message').hide();
+                return;
+            }
+        }
+
+        $('#registerButton').prop('disabled', true);
+        $('#success-message').text('Пожалуйста, подождите...').show();
+
         $.ajax({
             type: 'POST',
             url: '/auth/register',
             data: JSON.stringify(formData),
             contentType: 'application/json',
             success: function(response) {
-                $('#error-message').hide();
-                $('#success-message').text('Регистрация прошла успешно! Подождите...').show();
-                setTimeout(function() {
-                    window.location.href = "registration.html";
-                }, 3000);
+                if (!$('#verificationCodeGroup').is(':visible')) {
+                    $('#verificationCodeGroup').show();
+                    $('#error-message').hide();
+                    $('#success-message').text('Код подтверждения отправлен на ваш email!').show();
+                    $('#registerButton').text('Подтвердить код').prop('disabled', false);
+                } else {
+                    $('#error-message').hide();
+                    $('#success-message').text('Регистрация прошла успешно! Подождите...').show();
+                    setTimeout(function() {
+                        window.location.href = "/auth/login";
+                    }, 3000);
+                }
             },
             error: function(xhr) {
                 var errorMessage = xhr.responseJSON.error;
                 $('#error-message').text(errorMessage).show();
+                $('#success-message').hide();
+                $('#registerButton').prop('disabled', false);
             }
         });
+    });
+
+    $('#verification_code').on('input', function() {
+        $('#success-message').hide();
     });
 });

@@ -1,9 +1,6 @@
 package com.onlineauction.OnlineAuction.advice;
 
-import com.onlineauction.OnlineAuction.exception.BidException;
-import com.onlineauction.OnlineAuction.exception.CategoryException;
-import com.onlineauction.OnlineAuction.exception.LotException;
-import com.onlineauction.OnlineAuction.exception.UserException;
+import com.onlineauction.OnlineAuction.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,9 +65,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("Пользователь не найден"));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("У вас нет досутпа к ресурсу"));
+    @ExceptionHandler(UserNotConfirmedException.class)
+    public ResponseEntity<?> handleUserNotConfirmedException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("Вы не подтвердили почту"));
     }
 
     private Map<String, String> errorResponse(String errorMessage) {

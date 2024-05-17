@@ -2,6 +2,7 @@ package com.onlineauction.OnlineAuction.service.impl;
 
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.Status;
+import com.onlineauction.OnlineAuction.exception.UserNotConfirmedException;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,25 +33,33 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccounts userAccounts = userRepository.findByLoginOrEmail(username);
-        if (userAccounts == null) {
-            throw new UsernameNotFoundException("Пользователь с таким логином или почтой не найден: " + username);
-        }
+        try {
+            UserAccounts userAccounts = userRepository.findByLoginOrEmail(username);
+            if (userAccounts == null) {
+                throw new UsernameNotFoundException("Пользователь с таким логином или почтой не найден: " + username);
+            }
 
-        if (userAccounts.getStatus() == Status.BLOCKED) {
-            throw new LockedException("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin_auction@gmail.com");
-        }
+            if (userAccounts.getStatus() == Status.BLOCKED) {
+                throw new LockedException("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin_auction@gmail.com");
+            }
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userAccounts.getRole().name());
-        return org.springframework.security.core.userdetails.User
-                .withUsername(userAccounts.getLogin())
-                .password(userAccounts.getPassword())
-                .authorities(Collections.singletonList(authority))
-                .accountLocked(userAccounts.getStatus() == Status.BLOCKED)
-                .credentialsExpired(false)
-                .accountExpired(false)
-                .disabled(false)
-                .build();
+            if (userAccounts.getStatus() == Status.UNCONFIRMED) {
+                throw new UserNotConfirmedException("User is not confirmed");
+            }
+
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userAccounts.getRole().name());
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(userAccounts.getLogin())
+                    .password(userAccounts.getPassword())
+                    .authorities(Collections.singletonList(authority))
+                    .accountLocked(userAccounts.getStatus() == Status.BLOCKED)
+                    .credentialsExpired(false)
+                    .accountExpired(false)
+                    .disabled(false)
+                    .build();
+        } catch (UserNotConfirmedException ex) {
+            throw new UserNotConfirmedException("User is not confirmed");
+        }
     }
     public String getCurrentUserLogin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

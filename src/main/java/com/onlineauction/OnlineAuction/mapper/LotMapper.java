@@ -3,6 +3,7 @@ package com.onlineauction.OnlineAuction.mapper;
 import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
+import com.onlineauction.OnlineAuction.mapper.context.MappingContext;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, MappingContext.class})

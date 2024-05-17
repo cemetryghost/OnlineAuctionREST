@@ -2,6 +2,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const error = urlParams.get('error');
     const blocked = urlParams.get('blocked');
+    const unconfirmed = urlParams.get('unconfirmed');
     const errorMessage = $('#error-message');
     const togglePassword = $('#togglePassword');
     const password = $('#password');
@@ -13,6 +14,9 @@ $(document).ready(function() {
     }
     if (blocked) {
         errorMessage.text("Ваш аккаунт заблокирован, свяжитесь с администратором по эл. почте: admin_auction@gmail.com").show();
+    }
+    if (unconfirmed) {
+        errorMessage.text("При регистрации вы не ввели код подтверждения!").show();
     }
 
     togglePassword.click(function() {

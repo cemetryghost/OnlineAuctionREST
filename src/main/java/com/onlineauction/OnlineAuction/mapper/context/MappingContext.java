@@ -1,4 +1,4 @@
-package com.onlineauction.OnlineAuction.mapper;
+package com.onlineauction.OnlineAuction.mapper.context;
 
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import lombok.Getter;

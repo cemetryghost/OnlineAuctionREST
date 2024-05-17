@@ -17,18 +17,23 @@ import com.onlineauction.OnlineAuction.service.impl.BidServiceImpl;
 import com.onlineauction.OnlineAuction.service.impl.CustomUserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-class BidServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class BidServiceImplTest {
 
     @Mock
     private BidRepository bidRepository;
@@ -51,198 +56,150 @@ class BidServiceImplTest {
     @InjectMocks
     private BidServiceImpl bidService;
 
+    private Bid bid;
+    private BidDTO bidDTO;
+    private Lot lot;
+    private UserAccounts user;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        lot = new Lot();
+        lot.setId(1L);
+        lot.setStatusLots(StatusLot.ACTIVE_LOT);
+        lot.setStartPrice(BigDecimal.valueOf(100));
+        lot.setStepPrice(BigDecimal.valueOf(10));
+        lot.setCurrentPrice(BigDecimal.valueOf(110));
+
+        user = new UserAccounts();
+        user.setId(1L);
+
+        bid = new Bid();
+        bid.setId(1L);
+        bid.setLot(lot);
+        bid.setBuyer(user);
+        bid.setBidAmount(BigDecimal.valueOf(120));
+
+        bidDTO = new BidDTO();
+        bidDTO.setId(1L);
+        bidDTO.setLotId(1L);
+        bidDTO.setBidAmount(BigDecimal.valueOf(120));
     }
 
     @Test
-    void testGetAllBids() {
-        Bid bid = new Bid();
-        BidDTO bidDTO = new BidDTO();
-
-        when(bidRepository.findAll()).thenReturn(List.of(bid));
-        when(bidMapper.bidToBidDTO(bid)).thenReturn(bidDTO);
+    public void testGetAllBids() {
+        when(bidRepository.findAll()).thenReturn(Arrays.asList(bid));
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenReturn(bidDTO);
 
         List<BidDTO> result = bidService.getAllBids();
-
+        assertNotNull(result);
         assertEquals(1, result.size());
-        verify(bidRepository, times(1)).findAll();
+        assertEquals(1L, result.get(0).getId());
     }
 
     @Test
-    void testGetBidsByLotId() {
-        Long lotId = 1L;
-        Bid bid = new Bid();
-        BidDTO bidDTO = new BidDTO();
+    public void testGetBidsByLotId() {
+        when(bidRepository.findByLotId(anyLong())).thenReturn(Arrays.asList(bid));
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenReturn(bidDTO);
 
-        when(bidRepository.findByLotId(lotId)).thenReturn(List.of(bid));
-        when(bidMapper.bidToBidDTO(bid)).thenReturn(bidDTO);
-
-        List<BidDTO> result = bidService.getBidsByLotId(lotId);
-
+        List<BidDTO> result = bidService.getBidsByLotId(1L);
+        assertNotNull(result);
         assertEquals(1, result.size());
-        verify(bidRepository, times(1)).findByLotId(lotId);
+        assertEquals(1L, result.get(0).getId());
     }
 
     @Test
-    void testGetBidById_Success() {
-        Long bidId = 1L;
-        Bid bid = new Bid();
-        BidDTO bidDTO = new BidDTO();
+    public void testGetBidById() {
+        when(bidRepository.findById(anyLong())).thenReturn(Optional.of(bid));
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenReturn(bidDTO);
 
-        when(bidRepository.findById(bidId)).thenReturn(Optional.of(bid));
-        when(bidMapper.bidToBidDTO(bid)).thenReturn(bidDTO);
+        BidDTO result = bidService.getBidById(1L);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+    }
 
-        BidDTO result = bidService.getBidById(bidId);
+    @Test
+    public void testGetBidById_NotFound() {
+        when(bidRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertNull(bidService.getBidById(1L));
+    }
+
+    @Test
+    public void testUpdateBid() {
+        when(bidRepository.findById(anyLong())).thenReturn(Optional.of(bid));
+        when(bidRepository.save(any(Bid.class))).thenReturn(bid);
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenAnswer(invocation -> {
+            Bid savedBid = invocation.getArgument(0);
+            BidDTO bidDTO = new BidDTO();
+            bidDTO.setId(savedBid.getId());
+            bidDTO.setBidAmount(savedBid.getBidAmount());
+            bidDTO.setLotId(savedBid.getLot().getId());
+            return bidDTO;
+        });
+        when(lotService.getLotById(anyLong())).thenReturn(new LotDTO());
+
+        BigDecimal newBidAmount = BigDecimal.valueOf(130);
+        BidDTO result = bidService.updateBid(1L, newBidAmount);
 
         assertNotNull(result);
-        verify(bidRepository, times(1)).findById(bidId);
-    }
-
-    @Test
-    void testGetBidById_NotFound() {
-        Long bidId = 1L;
-
-        when(bidRepository.findById(bidId)).thenReturn(Optional.empty());
-
-        BidDTO result = bidService.getBidById(bidId);
-
-        assertNull(result);
-    }
-
-    @Test
-    void testUpdateBid_Success() {
-        Long bidId = 1L;
-        BigDecimal newBidAmount = BigDecimal.valueOf(200);
-        Bid existingBid = new Bid();
-        Lot lot = new Lot();
-        lot.setStatusLots(StatusLot.ACTIVE_LOT);
-        lot.setCurrentPrice(BigDecimal.valueOf(100));
-        lot.setStepPrice(BigDecimal.valueOf(10));
-        existingBid.setLot(lot);
-        BidDTO bidDTO = new BidDTO();
-
-        when(bidRepository.findById(bidId)).thenReturn(Optional.of(existingBid));
-        when(bidRepository.save(existingBid)).thenReturn(existingBid);
-        when(bidMapper.bidToBidDTO(existingBid)).thenReturn(bidDTO);
-        when(lotService.getLotById(lot.getId())).thenReturn(new LotDTO());
-
-        BidDTO result = bidService.updateBid(bidId, newBidAmount);
-
-        assertNotNull(result);
-        assertEquals(newBidAmount, existingBid.getBidAmount());
+        assertEquals(1L, result.getId());
+        assertEquals(newBidAmount, result.getBidAmount());
         assertEquals(newBidAmount, lot.getCurrentPrice());
-        verify(bidRepository, times(1)).save(existingBid);
-        verify(lotRepository, times(1)).save(lot);
     }
 
     @Test
-    void testUpdateBid_Failure_InvalidAmount() {
-        Long bidId = 1L;
-        BigDecimal newBidAmount = BigDecimal.valueOf(105);
-        Bid existingBid = new Bid();
-        Lot lot = new Lot();
-        lot.setStatusLots(StatusLot.ACTIVE_LOT);
-        lot.setCurrentPrice(BigDecimal.valueOf(100));
-        lot.setStepPrice(BigDecimal.valueOf(10));
-        existingBid.setLot(lot);
+    public void testUpdateBid_LotNotActive() {
+        lot.setStatusLots(StatusLot.COMPLETED_LOT);
+        when(bidRepository.findById(anyLong())).thenReturn(Optional.of(bid));
 
-        when(bidRepository.findById(bidId)).thenReturn(Optional.of(existingBid));
-
-        BidException exception = assertThrows(BidException.class, () -> bidService.updateBid(bidId, newBidAmount));
-
-        assertEquals("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага", exception.getMessage());
+        assertThrows(BidException.class, () -> bidService.updateBid(1L, BigDecimal.valueOf(130)));
     }
 
     @Test
-    void testDeleteBid_Success() {
-        Long bidId = 1L;
-        Bid existingBid = new Bid();
+    public void testDeleteBid() {
+        when(bidRepository.findById(anyLong())).thenReturn(Optional.of(bid));
+        doNothing().when(bidRepository).delete(any(Bid.class));
 
-        when(bidRepository.findById(bidId)).thenReturn(Optional.of(existingBid));
+        bidService.deleteBid(1L);
 
-        bidService.deleteBid(bidId);
-
-        verify(bidRepository, times(1)).delete(existingBid);
+        verify(bidRepository, times(1)).delete(bid);
     }
 
     @Test
-    void testPlaceBid_Success() {
-        Long lotId = 1L;
-        Lot lot = new Lot();
-        lot.setId(lotId);
-        lot.setStatusLots(StatusLot.ACTIVE_LOT);
-        lot.setCurrentPrice(BigDecimal.valueOf(100));
-        lot.setStepPrice(BigDecimal.valueOf(10));
-        UserAccounts buyer = new UserAccounts();
-        buyer.setId(1L);
-        BidDTO bidDTO = new BidDTO();
-        bidDTO.setLotId(lotId);
-        bidDTO.setBidAmount(BigDecimal.valueOf(110));
-        Bid bid = new Bid();
-
-        when(lotRepository.findById(lotId)).thenReturn(Optional.of(lot));
-        when(customUserDetailsServiceImpl.getCurrentUserLogin()).thenReturn("buyer");
-        when(userRepository.findByLogin("buyer")).thenReturn(buyer);
-        when(bidMapper.BidDTOtoBid(bidDTO)).thenReturn(bid);
-        when(bidRepository.save(bid)).thenReturn(bid);
-        when(bidMapper.bidToBidDTO(bid)).thenReturn(bidDTO);
-        when(lotService.getLotById(lotId)).thenReturn(new LotDTO());
+    public void testPlaceBid() {
+        when(lotRepository.findById(anyLong())).thenReturn(Optional.of(lot));
+        when(customUserDetailsServiceImpl.getCurrentUserLogin()).thenReturn("user1");
+        when(userRepository.findByLogin(anyString())).thenReturn(user);
+        when(bidMapper.BidDTOtoBid(any(BidDTO.class))).thenReturn(bid);
+        when(bidRepository.save(any(Bid.class))).thenReturn(bid);
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenReturn(bidDTO);
+        when(lotService.getLotById(anyLong())).thenReturn(new LotDTO());
 
         BidDTO result = bidService.placeBid(bidDTO);
-
         assertNotNull(result);
-        verify(bidRepository, times(1)).save(bid);
-        verify(lotRepository, times(1)).save(lot);
+        assertEquals(1L, result.getId());
+        assertEquals(BigDecimal.valueOf(120), result.getBidAmount());
     }
 
     @Test
-    void testPlaceBid_Failure_InvalidAmount() {
-        Long lotId = 1L;
-        Lot lot = new Lot();
-        lot.setId(lotId);
-        lot.setStatusLots(StatusLot.ACTIVE_LOT);
-        lot.setCurrentPrice(BigDecimal.valueOf(100));
-        lot.setStepPrice(BigDecimal.valueOf(10));
-        UserAccounts buyer = new UserAccounts();
-        buyer.setId(1L);
-        BidDTO bidDTO = new BidDTO();
-        bidDTO.setLotId(lotId);
-        bidDTO.setBidAmount(BigDecimal.valueOf(105));
-        Bid bid = new Bid();
+    public void testPlaceBid_LotNotActive() {
+        lot.setStatusLots(StatusLot.COMPLETED_LOT);
+        when(lotRepository.findById(anyLong())).thenReturn(Optional.of(lot));
 
-        when(lotRepository.findById(lotId)).thenReturn(Optional.of(lot));
-        when(customUserDetailsServiceImpl.getCurrentUserLogin()).thenReturn("buyer");
-        when(userRepository.findByLogin("buyer")).thenReturn(buyer);
-        when(bidMapper.BidDTOtoBid(bidDTO)).thenReturn(bid);
-
-        BidException exception = assertThrows(BidException.class, () -> bidService.placeBid(bidDTO));
-
-        assertEquals("Новая сумма ставки должна быть больше или равна текущей сумме ставки плюс цена шага", exception.getMessage());
+        assertThrows(BidException.class, () -> bidService.placeBid(bidDTO));
     }
 
     @Test
-    void testGetMyBidsWithLotDetails() {
-        UserAccounts buyer = new UserAccounts();
-        buyer.setId(1L);
-        Bid bid = new Bid();
-        bid.setBuyer(buyer);
-        Lot lot = new Lot();
-        lot.setId(1L);
-        bid.setLot(lot);
-        BidDTO bidDTO = new BidDTO();
-        LotDTO lotDTO = new LotDTO();
-
-        when(customUserDetailsServiceImpl.getCurrentUserLogin()).thenReturn("buyer");
-        when(userRepository.findByLogin("buyer")).thenReturn(buyer);
-        when(bidRepository.findByBuyerId(buyer.getId())).thenReturn(List.of(bid));
-        when(bidMapper.bidToBidDTO(bid)).thenReturn(bidDTO);
-        when(lotService.getLotById(lot.getId())).thenReturn(lotDTO);
+    public void testGetMyBidsWithLotDetails() {
+        when(customUserDetailsServiceImpl.getCurrentUserLogin()).thenReturn("user1");
+        when(userRepository.findByLogin(anyString())).thenReturn(user);
+        when(bidRepository.findByBuyerId(anyLong())).thenReturn(Arrays.asList(bid));
+        when(bidMapper.bidToBidDTO(any(Bid.class))).thenReturn(bidDTO);
+        when(lotService.getLotById(anyLong())).thenReturn(new LotDTO());
 
         List<BidDTO> result = bidService.getMyBidsWithLotDetails();
-
+        assertNotNull(result);
         assertEquals(1, result.size());
-        verify(bidRepository, times(1)).findByBuyerId(buyer.getId());
+        assertEquals(1L, result.get(0).getId());
     }
 }

@@ -7,8 +7,7 @@ import com.onlineauction.OnlineAuction.enums.Status;
 import com.onlineauction.OnlineAuction.exception.UserException;
 import com.onlineauction.OnlineAuction.mapper.UserMapper;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
-import com.onlineauction.OnlineAuction.service.LotService;
-import com.onlineauction.OnlineAuction.service.UserService;
+import com.onlineauction.OnlineAuction.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,27 +28,65 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
     private final LotService lotService;
+    private final EmailService emailService;
+    private final VerificationCodeService verificationCodeService;
+    private final TemporaryUserStorageService temporaryUserStorageService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, CustomUserDetailsServiceImpl customUserDetailsServiceImpl, LotService lotService) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, CustomUserDetailsServiceImpl customUserDetailsServiceImpl, LotService lotService, EmailService emailService, VerificationCodeService verificationCodeService, TemporaryUserStorageService temporaryUserStorageService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
         this.lotService = lotService;
+        this.emailService = emailService;
+        this.verificationCodeService = verificationCodeService;
+        this.temporaryUserStorageService = temporaryUserStorageService;
     }
 
     @Override
     public UserDTO registerNewUser(UserDTO userDTO) {
-        validateUserAge(userDTO.getBirth_date());
-        checkDuplicateUser(userDTO.getLogin(), userDTO.getEmail());
-
         userDTO.setStatus(Status.ACTIVE);
         UserAccounts user = userMapper.userDTOToUser(userDTO);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         UserAccounts savedUser = userRepository.save(user);
         customUserDetailsServiceImpl.updateUserDetails(savedUser);
         return userMapper.userToUserDTO(savedUser);
+    }
+
+    @Override
+    public Map<String, String> register(UserDTO userDTO) throws UserException {
+        if (userDTO.getVerificationCode() == null || userDTO.getVerificationCode().isEmpty()) {
+            initiateUserRegistration(userDTO);
+            return Map.of("message", "Код подтверждения отправлен на ваш email!");
+        } else {
+            completeUserRegistration(userDTO);
+            return Map.of("message", "Регистрация прошла успешно!");
+        }
+    }
+
+    public void initiateUserRegistration(UserDTO userDTO) throws UserException {
+        validateUserAge(userDTO.getBirth_date());
+        checkDuplicateUser(userDTO.getLogin(), userDTO.getEmail());
+
+        String verificationCode = verificationCodeService.generateCode(userDTO.getEmail());
+        emailService.sendEmail(userDTO.getEmail(), "Код подтверждения", "Ваш код подтверждения для регистрации на платформе: " + verificationCode);
+
+        temporaryUserStorageService.saveTemporaryUser(userDTO.getEmail(), userDTO);
+    }
+
+    public void completeUserRegistration(UserDTO userDTO) throws UserException {
+        if (verificationCodeService.validateCode(userDTO.getEmail(), userDTO.getVerificationCode())) {
+            UserDTO tempUser = temporaryUserStorageService.getTemporaryUser(userDTO.getEmail());
+            if (tempUser != null) {
+                registerNewUser(tempUser);
+                temporaryUserStorageService.removeTemporaryUser(userDTO.getEmail());
+            } else {
+                throw new UserException("Временные данные пользователя не найдены");
+            }
+        } else {
+            throw new UserException("Неверный или истекший код подтверждения");
+        }
     }
 
     @Override
@@ -96,7 +134,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private void validateUserAge(LocalDate birthDate) {
+    public void validateUserAge(LocalDate birthDate) {
         LocalDate today = LocalDate.now();
         long age = ChronoUnit.YEARS.between(birthDate, today);
         if (age < 18) {
@@ -104,7 +142,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void checkDuplicateUser(String login, String email) {
+    public void checkDuplicateUser(String login, String email) {
         if (userRepository.existsByLogin(login)) {
             throw new UserException("Пользователь с таким логином уже существует");
         }

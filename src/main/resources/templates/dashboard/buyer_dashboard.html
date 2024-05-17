@@ -3,6 +3,33 @@
 <head>
     <title>Buyer Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .rule {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        .rule p {
+            font-size: 20px;
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="blocks/header"></div>
@@ -11,12 +38,32 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
-                <h1 class="mt-5">Добро пожаловать на платформу "Онлайн - Аукцион"</h1>
-                <p class="lead">Дальнейшие действия осуществляйте по кнопкам в шапке сайта</p>
+                <h1 class="mt-5">Добро пожаловать на платформу "Онлайн-Аукцион"</h1>
+                <p class="lead">Дальнейшие действия осуществляются по кнопкам в шапке сайта</p>
+                <p class="lead"></p>
+                <h2 class="mt-5">Правила покупателя на платформе:</h2>
+                <div class="rule">
+                    <p><strong>1. Честность и точность информации:</strong> Покупатель обязан предоставить честную и точную информацию о себе при регистрации на платформе.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>2. Внимательное ознакомление с описанием товара:</strong> Покупатель обязан внимательно ознакомиться с полным описанием и изображением товара перед тем, как сделать ставку.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>3. Коммуникация с продавцом:</strong> Покупатель должен поддерживать оперативную коммуникацию с продавцом для урегулирования всех вопросов, связанных с покупкой.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>5. Обязательство по завершению сделки:</strong> После выигранной ставки, покупатель обязан завершить сделку и не отказываться от покупки без веской причины.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>6. Блокировка аккаунта:</strong> Нарушение правил платформы может привести к временной или постоянной блокировке аккаунта покупателя.</p>
+                </div>
+                <p class="lead"></p>
+                <h4 class="mt-4">По интересующим вопросам, вы можете связаться с администратором по эл.почте: admin_auction@gmail.com</h4>
             </div>
         </div>
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="/js/lots.js"></script>

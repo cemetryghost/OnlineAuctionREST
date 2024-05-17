@@ -21,23 +21,32 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Lot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_lots")
     private Long id;
+
     @Column(nullable = false)
     private String nameLots;
+
     @Column(nullable = false)
     private String descriptionLots;
+
     @Column(nullable = false)
     private BigDecimal startPrice;
+
     private BigDecimal currentPrice;
+
     @Column(nullable = false)
     private BigDecimal stepPrice;
+
     @Column(nullable = false)
     private LocalDate publicationDate;
+
     @Column(nullable = false)
     private LocalDate closingDate;
+
     @Column(nullable = false)
     private String conditionLots;
 

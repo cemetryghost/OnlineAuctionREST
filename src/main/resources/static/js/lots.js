@@ -13,12 +13,7 @@ $(document).ready(function () {
     pageType = $('body').data('page-type');
     userRole = window.userRole || 'ROLE_NOT_SPECIFIED';
 
-    console.log("User Role:", userRole);
-    console.log("Page Type:", pageType);
-
     initializeApp();
-
-    console.log("User Role:", userRole);
 
     $('#lotModal').on('hidden.bs.modal', clearLotForm);
 
@@ -45,10 +40,10 @@ function initializeApp() {
     setMinimumDate('#closingDate');
     setMinimumDate('#editLotClosingDate');
     if (userRole === 'ROLE_ADMIN') {
-        $('#statusSelectContainer').show(); // Выпадающий список для администратора
+        $('#statusSelectContainer').show();
     }
     if (userRole === 'ROLE_SELLER') {
-        $('#addLotButton').show(); // Кнопка добавления лота только для продавцов
+        $('#addLotButton').show();
     }
     loadMyCompletedLots();
 }
@@ -78,7 +73,7 @@ async function loadCategories() {
             response.forEach(cat => filterSelect.append(new Option(cat.nameCategory, cat.id)));
         }
     } catch (error) {
-        console.error("Error loading categories:", error);
+        console.error("Ошибка загрузки категорий:", error);
     }
 }
 
@@ -111,9 +106,10 @@ async function loadLots(statusLot = '', role = userRole) {
             lots.forEach(lot => container.append(createLotCard(lot, lots)));
         }
     } catch (error) {
-        console.error("Error loading lots:", error);
+        console.error("Ошибка загрузки лотов", error);
     }
 }
+
 
 function createLotCard(lot) {
     const card = $(`
@@ -124,7 +120,7 @@ function createLotCard(lot) {
                     <h5 class="card-title">${lot.nameLots}</h5>
                     <p class="card-text">${lot.descriptionLots}</p>
                     <p class="card-text">Статус: ${statusTranslations[lot.statusLots]}</p>
-                    <p class="card-text">Текущая цена: ${lot.currentPrice || 'Ставки еще не сделаны'}</p>
+                    <p class="card-text">Текущая цена: ${lot.currentPrice !== undefined && lot.currentPrice !== null ? `${lot.currentPrice} руб.` : 'Ставки еще не сделаны'}</p>
                     <button class="btn btn-primary lot-details-button" data-lot-id="${lot.id}">Подробнее</button>
                 </div>
             </div>
@@ -135,22 +131,12 @@ function createLotCard(lot) {
 }
 
 function showLotDetails(lotId, allLots, userBid = null) {
-    console.log("Showing lot details for lot ID:", lotId);
-    if (!Array.isArray(allLots)) {
-        console.error("All lots array is undefined or not an array");
-        return;
-    }
-    const lot = allLots.find(l => l.id === lotId);
+    const lot = Array.isArray(allLots) ? allLots.find(l => l.id === lotId) : null;
     if (!lot) {
-        console.error("Lot not found with ID:", lotId);
         return;
     }
-
-    console.log("Lot found:", lot);
-    console.log("User bid:", userBid);
 
     $.getJSON(`/category/${lot.categoryId}`, function(category) {
-        console.log("Category details:", category);
 
         $('#lotDetailsBody').html(generateLotDetailsHtml(lot, category.nameCategory));
 
@@ -171,20 +157,17 @@ function showLotDetails(lotId, allLots, userBid = null) {
         } else if (userRole === 'ROLE_BUYER') {
             const $footer = $('#lotDetailsFooter');
             $footer.html(generateBuyerFooterButtons(lot, userBid));
-            console.log("Generated buyer footer buttons.");
             $('#placeBidButton').off('click').on('click', function() {
                 placeBid(lot.id);
             });
             $('#increaseBidButton').off('click').on('click', function() {
                 const bidId = $(this).data('bid-id');
-                console.log("Increasing bid for bid ID:", bidId);
                 increaseBid(lot.id, bidId);
             });
         } else {
             $('#lotDetailsFooter').html(generateFooterButtons(lot));
         }
 
-        console.log("Showing modal for lot ID:", lotId);
         $('#lotDetailsModal').modal('show');
 
         $('#lotDetailsModal').on('hidden.bs.modal', function () {
@@ -196,6 +179,7 @@ function showLotDetails(lotId, allLots, userBid = null) {
         console.error('Ошибка загрузки категории: ', textStatus, errorThrown);
     });
 }
+
 
 function generateAdminFooterButtons(lot) {
     return `
@@ -267,7 +251,7 @@ function generateLotDetailsHtml(lot, categoryName) {
         <p><strong>Категория:</strong> ${categoryName}</p>
         <p><strong>Описание:</strong> ${lot.descriptionLots}</p>
         <p><strong>Стартовая цена:</strong> ${lot.startPrice} руб.</p>
-        <p><strong>Текущая цена:</strong> ${lot.currentPrice || 'Ставки еще не сделаны'} руб.</p>
+        <p><strong>Текущая цена:</strong> ${lot.currentPrice !== undefined && lot.currentPrice !== null ? `${lot.currentPrice} руб.` : 'Ставки еще не сделаны'}</p>
         <p><strong>Шаг цены:</strong> ${lot.stepPrice} руб. </p>
         <p><strong>Дата публикации:</strong> ${lot.publicationDate}</p>
         <p><strong>Дата закрытия:</strong> ${lot.closingDate}</p>
@@ -449,7 +433,7 @@ function changeLotStatus(lotId, newStatus) {
 }
 
 function handleError(jqxhr, textStatus, error) {
-    console.error("Request Failed:", textStatus, error);
+    console.error("Ошибка запроса:", textStatus, error);
     $('#errorMessage').text('Произошла ошибка: ' + textStatus + ' ' + error);
     $('#errorModal').modal('show');
 }
@@ -465,7 +449,7 @@ function loadMyCompletedLots() {
             data.forEach(lot => lotsContainer.append(createLotCard(lot)));
         }
     }).fail(function(jqxhr, textStatus, error) {
-        console.error("Failed to load completed lots:", textStatus, error);
+        console.error("Ошибка загрузки лотов продавца:", textStatus, error);
     });
 }
 
@@ -489,7 +473,7 @@ function placeBid(lotId) {
             updateLotCard(response.lotDTO, response);
         },
         error: function(xhr, status, error) {
-            console.error("Error placing bid:", error);
+            console.error("Ошибка размещения ставки:", error);
             alert("Произошла ошибка при размещении ставки. Пожалуйста, попробуйте еще раз.");
         }
     });
@@ -497,10 +481,19 @@ function placeBid(lotId) {
 
 function increaseBid(lotId, bidId) {
     const newBidAmount = parseFloat($('#newBidAmount').val());
-    const lot = lots.find(l => l.id === lotId);
+    const lot = lots.find(l => (l.lotDTO ? l.lotDTO.id : l.id) === lotId);
 
-    if (!newBidAmount || newBidAmount < (lot.currentPrice || lot.startPrice) + lot.stepPrice) {
-        showBidErrorModal(lot);
+    if (!lot) {
+        console.error("Лот с таким id не найден:", lotId);
+        return;
+    }
+
+    const actualLot = lot.lotDTO ? lot.lotDTO : lot;
+    const currentPrice = actualLot.currentPrice !== undefined && actualLot.currentPrice !== null ? actualLot.currentPrice : actualLot.startPrice;
+
+    if (!newBidAmount || newBidAmount < currentPrice + actualLot.stepPrice) {
+        $('#lotDetailsModal').modal('hide');
+        showBidErrorModal(actualLot);
         return;
     }
 
@@ -510,29 +503,40 @@ function increaseBid(lotId, bidId) {
         data: { newBidAmount: newBidAmount },
         success: function(response) {
             $('#lotDetailsModal').modal('hide');
-            $('#bidConfirmationModal').modal('show')
-            updateLotCard(response.lotDTO, response);
+            $('#bidConfirmationModal').modal('show');
+            updateLotCard(response.lotDTO, response, 'userBids');
+            if (pageType === 'userBids') {
+                loadUserBids();
+            }
         },
         error: function(xhr, status, error) {
-            console.error("Error increasing bid:", error);
-            alert("Произошла ошибка при повышении ставки. Пожалуйста, попробуйте еще раз.");
+            console.error("Ошибка повышения ставки:", error);
+            $('#lotDetailsModal').modal('hide');
+            showBidErrorModal(actualLot);
         }
     });
 }
 
+
 function showBidErrorModal(lot) {
     const minBidAmount = (lot.currentPrice || lot.startPrice) + lot.stepPrice;
+    const currentPriceText = lot.currentPrice !== undefined && lot.currentPrice !== null ? `${lot.currentPrice} руб.` : 'Ставки еще не сделаны';
+
     $('#bidErrorModal .modal-body').html(`
         <p>Минимальная сумма ставки должна быть больше или равна ${minBidAmount} руб.</p>
         <p>Начальная цена: ${lot.startPrice} руб.</p>
+        <p>Текущая цена: ${currentPriceText}</p>
         <p>Шаг цены: ${lot.stepPrice} руб.</p>
     `);
-    $('#bidErrorModal').modal('show');
+
+    $('#lotDetailsModal').modal('hide');
 
     $('#bidErrorModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
-        showLotDetails(lot.id, [lot]);
+        $('#bidErrorModal').off('hidden.bs.modal');
+        $('#lotDetailsModal').modal('show');
     });
-    $('#lotDetailsModal').modal('hide');
+
+    $('#bidErrorModal').modal('show');
 }
 
 
@@ -542,13 +546,12 @@ function loadActiveLots(categoryId = '', keyword = '') {
 
     $.getJSON(url, params)
         .done(function(allLots) {
-            console.log("Активные лоты загружены:", allLots);
             const lotsContainer = $('#lotsContainer').empty();
             if (allLots.length === 0) {
                 $('#noLotsMessageBuyer').text('Лоты не найдены').show();
             } else {
                 $('#noLotsMessageBuyer').hide();
-                lots = allLots; // сохраняем лоты в глобальной переменной
+                lots = allLots;
                 allLots.forEach(lot => lotsContainer.append(createLotCard(lot)));
                 $('.lot-details-button').click(function() {
                     const lotId = $(this).data('lot-id');
@@ -570,14 +573,15 @@ function loadActiveLots(categoryId = '', keyword = '') {
 }
 
 function loadUserBids() {
-    console.log("Loading user bids...");
     $.getJSON('/bids/my', function(bids) {
-        console.log("User bids loaded:", bids);
         const userBidsContainer = $('#userBidsContainer').empty();
+        lots = bids.map(bid => bid.lotDTO);
         if (bids.length === 0) {
-            userBidsContainer.append('<p>У вас еще нет ставок.</p>');
+            $('#noLotsMessageBuyerBids').text('Вы еще не принимали участие в торгах').show();
         } else {
-            bids.forEach(bid => userBidsContainer.append(createUserBidCard(bid)));
+            bids.forEach(bid => {
+                userBidsContainer.append(createUserBidCard(bid));
+            });
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error('Ошибка загрузки ставок: ', textStatus, errorThrown);
@@ -585,10 +589,10 @@ function loadUserBids() {
     });
 }
 
-function updateLotCard(updatedLot, userBid = null) {
+function updateLotCard(updatedLot, userBid = null, pageType = '') {
     const card = $(`.lot-details-button[data-lot-id="${updatedLot.id}"]`).closest('.card');
     if (card.length === 0) {
-        console.warn("Card not found for lot ID:", updatedLot.id);
+        console.warn("Карточка с лотом не найдена:", updatedLot.id);
     } else {
         card.find('.card-title').text(updatedLot.nameLots);
         card.find('.card-text').each(function(index) {
@@ -600,11 +604,13 @@ function updateLotCard(updatedLot, userBid = null) {
                     $(this).text('Статус: ' + statusTranslations[updatedLot.statusLots]);
                     break;
                 case 2:
-                    $(this).text('Текущая цена: ' + (updatedLot.currentPrice || 'Ставки еще не сделаны'));
+                    $(this).text('Текущая цена: ' + (updatedLot.currentPrice !== undefined && updatedLot.currentPrice !== null ? `${updatedLot.currentPrice} руб.` : 'Ставки еще не сделаны'));
                     break;
                 case 3:
-                    if (userBid) {
+                    if (pageType === 'userBids' && userBid) {
                         $(this).text('Ваша ставка: ' + userBid.bidAmount);
+                    } else {
+                        $(this).remove();
                     }
                     break;
                 default:
@@ -615,8 +621,8 @@ function updateLotCard(updatedLot, userBid = null) {
     }
 }
 
-function createUserBidCard(bid) {
-    console.log("Creating user bid card for bid:", bid);
+
+function createUserBidCard(bid, pageType = 'userBids') {
     const lot = bid.lotDTO;
     const card = $(`
         <div class="col-md-4">
@@ -625,15 +631,14 @@ function createUserBidCard(bid) {
                 <div class="card-body">
                     <h5 class="card-title">${lot.nameLots}</h5>
                     <p class="card-text">${lot.descriptionLots}</p>
-                    <p class="card-text">Текущая ставка: ${lot.currentPrice || 'Ставки еще не сделаны'}</p>
-                    <p class="card-text">Ваша ставка: ${bid.bidAmount}</p>
+                    <p class="card-text">Текущая ставка: ${lot.currentPrice !== undefined && lot.currentPrice !== null ? `${lot.currentPrice} руб.` : 'Ставки еще не сделаны'}</p>
+                    ${pageType === 'userBids' ? `<p class="card-text">Ваша ставка: ${bid.bidAmount}</p>` : ''}
                     <button class="btn btn-primary lot-details-button" data-lot-id="${lot.id}">Подробнее</button>
                 </div>
             </div>
         </div>
     `);
     card.find('.btn-primary').on('click', function() {
-        console.log("User clicked 'Подробнее' for lot:", lot.id);
         showLotDetails(lot.id, [lot], bid);
     });
     return card;

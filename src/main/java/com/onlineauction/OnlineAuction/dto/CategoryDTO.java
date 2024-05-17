@@ -13,6 +13,4 @@ public class CategoryDTO {
     private Long id;
     @NotBlank (message = "Имя категории не может быть пустым")
     private String nameCategory;
-
-//    private LotDTO lotDTO;
 }

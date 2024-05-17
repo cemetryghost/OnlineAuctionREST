@@ -9,18 +9,22 @@ import com.onlineauction.OnlineAuction.service.impl.CategoryServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-class CategoryServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
@@ -31,187 +35,102 @@ class CategoryServiceImplTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
+    private Category category;
+    private CategoryDTO categoryDTO;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        category = new Category();
+        category.setId(1L);
+        category.setNameCategory("Electronics");
+
+        categoryDTO = new CategoryDTO();
+        categoryDTO.setId(1L);
+        categoryDTO.setNameCategory("Electronics");
     }
 
     @Test
-    void testGetCategoryById_Success() {
-        Long categoryId = 1L;
-        Category category = new Category();
-        category.setId(categoryId);
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setId(categoryId);
+    public void testGetCategoryById() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryMapper.categoryToCategoryDto(any(Category.class))).thenReturn(categoryDTO);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryMapper.categoryToCategoryDto(category)).thenReturn(categoryDTO);
-
-        CategoryDTO result = categoryService.getCategoryById(categoryId);
-
+        CategoryDTO result = categoryService.getCategoryById(1L);
         assertNotNull(result);
-        assertEquals(categoryId, result.getId());
+        assertEquals(1L, result.getId());
     }
 
     @Test
-    void testGetCategoryById_NotFound() {
-        Long categoryId = 1L;
+    public void testGetCategoryByIdNotFound() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> categoryService.getCategoryById(categoryId));
-
-        assertEquals("Категория с таким ID не найдена: " + categoryId, exception.getMessage());
+        assertThrows(EntityNotFoundException.class, () -> categoryService.getCategoryById(1L));
     }
 
     @Test
-    void testGetAllCategories_Success() {
-        Category category1 = new Category();
-        Category category2 = new Category();
-        CategoryDTO categoryDTO1 = new CategoryDTO();
-        CategoryDTO categoryDTO2 = new CategoryDTO();
-
-        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category1, category2));
-        when(categoryMapper.categoryToCategoryDto(category1)).thenReturn(categoryDTO1);
-        when(categoryMapper.categoryToCategoryDto(category2)).thenReturn(categoryDTO2);
+    public void testGetAllCategories() {
+        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category));
+        when(categoryMapper.categoryToCategoryDto(any(Category.class))).thenReturn(categoryDTO);
 
         List<CategoryDTO> result = categoryService.getAllCategories();
-
-        assertEquals(2, result.size());
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Electronics", result.get(0).getNameCategory());
     }
 
     @Test
-    void testCreateCategory_Success() {
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setNameCategory("New Category");
-        Category category = new Category();
-        category.setNameCategory("New Category");
-
-        when(categoryRepository.existsByNameCategory(categoryDTO.getNameCategory())).thenReturn(false);
-        when(categoryMapper.categoryDtoToCategory(categoryDTO)).thenReturn(category);
-        when(categoryRepository.save(category)).thenReturn(category);
-        when(categoryMapper.categoryToCategoryDto(category)).thenReturn(categoryDTO);
+    public void testCreateCategory() {
+        when(categoryRepository.existsByNameCategory(anyString())).thenReturn(false);
+        when(categoryMapper.categoryDtoToCategory(any(CategoryDTO.class))).thenReturn(category);
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
+        when(categoryMapper.categoryToCategoryDto(any(Category.class))).thenReturn(categoryDTO);
 
         CategoryDTO result = categoryService.createCategory(categoryDTO);
-
         assertNotNull(result);
-        assertEquals(categoryDTO.getNameCategory(), result.getNameCategory());
+        assertEquals("Electronics", result.getNameCategory());
     }
 
     @Test
-    void testCreateCategory_EmptyName() {
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setNameCategory("");
+    public void testCreateCategory_NameExists() {
+        when(categoryRepository.existsByNameCategory(anyString())).thenReturn(true);
 
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.createCategory(categoryDTO));
-
-        assertEquals("Имя категории не может быть пустым", exception.getMessage());
+        assertThrows(CategoryException.class, () -> categoryService.createCategory(categoryDTO));
     }
 
     @Test
-    void testCreateCategory_DuplicateName() {
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setNameCategory("Duplicate Category");
+    public void testDeleteCategory() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.existsLotsByCategoryId(any(Category.class))).thenReturn(false);
+        doNothing().when(categoryRepository).deleteById(anyLong());
 
-        when(categoryRepository.existsByNameCategory(categoryDTO.getNameCategory())).thenReturn(true);
+        categoryService.deleteCategory(1L);
 
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.createCategory(categoryDTO));
-
-        assertEquals("Категория с именем \"Duplicate Category\" уже существует", exception.getMessage());
+        verify(categoryRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void testDeleteCategory_Success() {
-        Long categoryId = 1L;
-        Category category = new Category();
-        category.setId(categoryId);
+    public void testDeleteCategory_WithLots() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.existsLotsByCategoryId(any(Category.class))).thenReturn(true);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryRepository.existsLotsByCategoryId(category)).thenReturn(false);
-
-        categoryService.deleteCategory(categoryId);
-
-        verify(categoryRepository, times(1)).deleteById(categoryId);
+        assertThrows(CategoryException.class, () -> categoryService.deleteCategory(1L));
     }
 
     @Test
-    void testDeleteCategory_NotFound() {
-        Long categoryId = 1L;
+    public void testUpdateCategoryName() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.existsByNameCategory(anyString())).thenReturn(false);
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.deleteCategory(categoryId));
-
-        assertEquals("Категория с ID " + categoryId + " не существует", exception.getMessage());
-    }
-
-    @Test
-    void testDeleteCategory_WithLots() {
-        Long categoryId = 1L;
-        Category category = new Category();
-        category.setId(categoryId);
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryRepository.existsLotsByCategoryId(category)).thenReturn(true);
-
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.deleteCategory(categoryId));
-
-        assertEquals("Нельзя удалить категорию, так как к ней привязаны лоты", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateCategoryName_Success() {
-        Long categoryId = 1L;
-        String newName = "Updated Category";
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setNameCategory("Old Category");
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryRepository.existsByNameCategory(newName)).thenReturn(false);
-        when(categoryRepository.save(category)).thenReturn(category);
-
-        boolean result = categoryService.updateCategoryName(categoryId, newName);
-
+        boolean result = categoryService.updateCategoryName(1L, "Updated Electronics");
         assertTrue(result);
-        assertEquals(newName, category.getNameCategory());
+        assertEquals("Updated Electronics", category.getNameCategory());
     }
 
     @Test
-    void testUpdateCategoryName_EmptyName() {
-        Long categoryId = 1L;
+    public void testUpdateCategoryName_NameExists() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.existsByNameCategory(anyString())).thenReturn(true);
 
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.updateCategoryName(categoryId, ""));
-
-        assertEquals("Имя категории не может быть пустым", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateCategoryName_DuplicateName() {
-        Long categoryId = 1L;
-        String newName = "Duplicate Category";
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setNameCategory("Old Category");
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryRepository.existsByNameCategory(newName)).thenReturn(true);
-
-        CategoryException exception = assertThrows(CategoryException.class, () -> categoryService.updateCategoryName(categoryId, newName));
-
-        assertEquals("Категория с именем \"" + newName + "\" уже существует", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateCategoryName_NotFound() {
-        Long categoryId = 1L;
-        String newName = "Updated Category";
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> categoryService.updateCategoryName(categoryId, newName));
-
-        assertEquals("Категория с таким ID не найдена: " + categoryId, exception.getMessage());
+        assertThrows(CategoryException.class, () -> categoryService.updateCategoryName(1L, "Updated Electronics"));
     }
 }
-

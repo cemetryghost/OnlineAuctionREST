@@ -3,6 +3,33 @@
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .rule {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        .rule p {
+            font-size: 20px;
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="blocks/header"></div>
@@ -11,8 +38,31 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
-                <h1 class="mt-5">Добро пожаловать на платформу "Онлайн - Аукцион"</h1>
-                <p class="lead">Дальнейшие действия осуществляйте по кнопкам в шапке сайта</p>
+                <h1 class="mt-5">Добро пожаловать на платформу "Онлайн-Аукцион"</h1>
+                <p class="lead">Дальнейшие действия осуществляются по кнопкам в шапке сайта</p>
+                <p class="lead"></p>
+                <h2 class="mt-5">Правила администратора на платформе:</h2>
+                <div class="rule">
+                    <p><strong>1. Проверка лотов:</strong> Администратор обязан проверять все новые лоты, добавляемые продавцами, на соответствие правилам и точность описания.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>2. Модерация изображений:</strong> Администратор должен проверять изображения товаров на подлинность и соответствие описанию.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>3. Одобрение и отклонение лотов:</strong> Администратор имеет право одобрять или отклонять лоты, основываясь на их соответствии правилам платформы.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>4. Управление пользователями:</strong> Администратор может блокировать или удалять аккаунты пользователей при неоднократных нарушениях правил платформы.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>5. Поддержка пользователей:</strong> Администратор обязан отвечать на запросы и вопросы пользователей в разумные сроки.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>6. Контроль за завершением лотов:</strong> Администратор должен следить за завершением лотов и правильностью проведения аукционов.</p>
+                </div>
+                <div class="rule">
+                    <p><strong>7. Обеспечение безопасности сделки:</strong> Администратор обязан быть гарантом сделки продавца и покупателя, если это решение обеих сторон.</p>
+                </div>
             </div>
         </div>
     </div>

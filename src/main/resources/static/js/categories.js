@@ -54,7 +54,7 @@ $(document).ready(function() {
             success: function() {
                 $('#addCategoryModal').modal('hide');
 
-                successMessage = "Категория успешно доавблена";
+                successMessage = "Категория успешно добавлена";
                 $('#successMessage').text(successMessage);
                 $('#successModal').modal('show');
 

@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +53,7 @@ class UserApiControllerIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void testGetAllUsers() throws Exception {
-        List<UserDTO> users = Arrays.asList(userDTO);
+        List<UserDTO> users = Collections.singletonList(userDTO);
         when(userService.getAllUsers()).thenReturn(users);
 
         mockMvc.perform(get("/user"))
