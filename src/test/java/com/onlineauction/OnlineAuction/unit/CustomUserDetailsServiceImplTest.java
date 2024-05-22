@@ -3,7 +3,7 @@ package com.onlineauction.OnlineAuction.unit;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
 import com.onlineauction.OnlineAuction.enums.Role;
 import com.onlineauction.OnlineAuction.enums.Status;
-import com.onlineauction.OnlineAuction.exception.UserNotConfirmedException;
+import com.onlineauction.OnlineAuction.exception.UserException;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.impl.CustomUserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +66,7 @@ public class CustomUserDetailsServiceImplTest {
         userAccounts.setStatus(Status.UNCONFIRMED);
         when(userRepository.findByLoginOrEmail(anyString())).thenReturn(userAccounts);
 
-        assertThrows(UserNotConfirmedException.class, () -> customUserDetailsServiceImpl.loadUserByUsername("testuser"));
+        assertThrows(UserException.class, () -> customUserDetailsServiceImpl.loadUserByUsername("testuser"));
     }
 
     @Test

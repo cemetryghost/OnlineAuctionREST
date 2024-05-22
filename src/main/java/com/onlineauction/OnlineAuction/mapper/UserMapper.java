@@ -2,9 +2,7 @@ package com.onlineauction.OnlineAuction.mapper;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
 import com.onlineauction.OnlineAuction.entity.UserAccounts;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")

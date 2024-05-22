@@ -13,6 +13,11 @@
 <body>
 <div class="container">
     <h2>Аккаунты</h2>
+    <div id="userActions">
+        <button class="btn btn-danger mr-2" onclick="deleteUser()" disabled>Удалить</button>
+        <button class="btn btn-warning mr-2" onclick="blockUser()" disabled>Заблокировать</button>
+        <button class="btn btn-success" onclick="unblockUser()" disabled>Разблокировать</button>
+    </div>
     <table class="table table-striped">
         <thead class="thead-light">
         <tr>
@@ -28,11 +33,6 @@
 
         </tbody>
     </table>
-    <div id="userActions">
-        <button class="btn btn-danger mr-2" onclick="deleteUser()" disabled>Удалить</button>
-        <button class="btn btn-warning mr-2" onclick="blockUser()" disabled>Заблокировать</button>
-        <button class="btn btn-success" onclick="unblockUser()" disabled>Разблокировать</button>
-    </div>
 </div>
 
 <div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
@@ -93,8 +93,6 @@
         </div>
     </div>
 </div>
-
 <script src="/js/accounts.js"></script>
-
 </body>
 </html>

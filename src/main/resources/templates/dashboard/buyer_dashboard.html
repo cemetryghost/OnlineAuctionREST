@@ -3,33 +3,7 @@
 <head>
     <title>Buyer Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        #content {
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .rule {
-            margin-bottom: 20px;
-            text-align: justify;
-        }
-        .rule p {
-            font-size: 20px;
-            margin-bottom: 0;
-        }
-    </style>
+    <link href="/css/style_dashboard.css" rel="stylesheet">
 </head>
 <body>
 <div th:replace="blocks/header"></div>
@@ -69,39 +43,24 @@
 <script src="/js/lots.js"></script>
 <script>
     $(document).ready(function() {
-        var userRole = 'ROLE_BUYER';
-
-        $('body').on('click', '.loadActiveLots', function() {
-            loadActiveLots();
-        });
-
-        $('body').on('click', '.loadUserBids', function() {
-            loadUserBids();
-        });
-
-        function loadActiveLots() {
-            console.log('Загрузка активных лотов...');
-            $('#content').empty();
-            $('#content').load('/buyer_lots', function(response, status, xhr) {
+        function loadContent(url, container) {
+            $(container).empty();
+            $(container).load(url, function(response, status, xhr) {
                 if (status == "error") {
-                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
-                } else {
-                    $('body').attr('data-page-type', 'activeLots'); // Устанавливаем pageType после загрузки
+                    console.error("Ошибка загрузки: " + xhr.status + " " + xhr.statusText);
                 }
             });
         }
 
-        function loadUserBids() {
-            console.log('Загрузка моих участий...');
-            $('#content').empty();
-            $('#content').load('/my_bids', function(response, status, xhr) {
-                if (status == "error") {
-                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
-                } else {
-                    $('body').attr('data-page-type', 'userBids');
-                }
-            });
-        }
+        $('body').on('click', '.loadActiveLots', function(e) {
+            e.preventDefault();
+            loadContent('/products', '#content')
+        });
+
+        $('body').on('click', '.loadUserBids', function(e) {
+            e.preventDefault();
+            loadContent('/my_bids', '#content')
+        });
     });
 </script>
 </body>

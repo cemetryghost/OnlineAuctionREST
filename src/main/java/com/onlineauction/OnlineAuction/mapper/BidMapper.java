@@ -2,8 +2,7 @@ package com.onlineauction.OnlineAuction.mapper;
 
 import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.entity.Bid;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface BidMapper {

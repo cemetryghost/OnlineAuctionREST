@@ -1,0 +1,25 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+#content {
+    padding: 20px;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+h1, h2 {
+    text-align: center;
+}
+.rule {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+.rule p {
+    font-size: 20px;
+    margin-bottom: 0;
+}

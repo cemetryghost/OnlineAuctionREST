@@ -1,7 +1,6 @@
 package com.onlineauction.OnlineAuction.dto;
 
 import com.onlineauction.OnlineAuction.enums.StatusLot;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

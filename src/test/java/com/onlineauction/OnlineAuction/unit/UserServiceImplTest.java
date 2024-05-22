@@ -92,7 +92,6 @@ public class UserServiceImplTest {
 
         assertNotNull(result);
         assertEquals("testuser", result.getLogin());
-        verify(customUserDetailsServiceImpl, times(1)).updateUserDetails(any(UserAccounts.class));
     }
 
     @Test

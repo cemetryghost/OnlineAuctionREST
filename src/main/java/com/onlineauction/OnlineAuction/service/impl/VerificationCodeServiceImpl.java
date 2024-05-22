@@ -2,7 +2,9 @@ package com.onlineauction.OnlineAuction.service.impl;
 
 import com.onlineauction.OnlineAuction.service.VerificationCodeService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -12,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Validated
 @Transactional
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 

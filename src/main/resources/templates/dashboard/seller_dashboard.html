@@ -3,33 +3,7 @@
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        #content {
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .rule {
-            margin-bottom: 20px;
-            text-align: justify;
-        }
-        .rule p {
-            font-size: 20px;
-            margin-bottom: 0;
-        }
-    </style>
+    <link href="/css/style_dashboard.css" rel="stylesheet">
 </head>
 <body>
 <div th:replace="blocks/header"></div>
@@ -72,31 +46,24 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('body').on('click', '.loadLots', function() {
-            loadLots();
-        });
-
-        $('body').on('click', '.loadCompletedLots', function() {
-            loadCompletedLots();
-        });
-
-        function loadLots() {
-            $('#content').empty();
-            $('#content').load('/products', function(response, status, xhr) {
+        function loadContent(url, container) {
+            $(container).empty();
+            $(container).load(url, function(response, status, xhr) {
                 if (status == "error") {
-                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
+                    console.error("Ошибка загрузки: " + xhr.status + " " + xhr.statusText);
                 }
             });
         }
 
-        function loadCompletedLots() {
-            $('#content').empty();
-            $('#content').load('/completed_lots', function(response, status, xhr) {
-                if (status == "error") {
-                    console.error("Ошибка при загрузке: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-        }
+        $('body').on('click', '.loadLots', function(e) {
+            e.preventDefault();
+            loadContent('/products', '#content')
+        });
+
+        $('body').on('click', '.loadCompletedLots', function(e) {
+            e.preventDefault();
+            loadContent('/completed_lots', '#content')
+        });
     });
 </script>
 </body>

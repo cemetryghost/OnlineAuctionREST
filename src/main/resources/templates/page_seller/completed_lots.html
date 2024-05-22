@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="/css/style_lots_card.css" rel="stylesheet">
     <script th:inline="javascript">
-        var userRole = /*[[${role}]]*/ 'ROLE_NOT_SPECIFIED';
+        var userRole = /*[[${role}]]*/ 'ROLE_SELLER';
     </script>
 </head>
 <body>
@@ -14,7 +14,7 @@
     <h2>Завершенные лоты</h2>
     <div id="noLotsMessageCompleted" class="alert alert-info" style="display: none;"></div>
     <div class="row" id="lotsContainer">
-        <!-- Карточки завершенных лотов будут добавлены сюда динамически -->
+
     </div>
 </div>
 
@@ -28,7 +28,7 @@
                 </button>
             </div>
             <div class="modal-body" id="lotDetailsBody">
-                <!-- Детали лота будут загружены сюда -->
+
             </div>
         </div>
     </div>

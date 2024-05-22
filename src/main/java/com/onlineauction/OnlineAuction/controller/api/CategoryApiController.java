@@ -3,7 +3,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 import com.onlineauction.OnlineAuction.dto.CategoryDTO;
 import com.onlineauction.OnlineAuction.service.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,14 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/category")
 @Validated
+@RequiredArgsConstructor
 public class CategoryApiController {
 
     private final CategoryService categoryService;
-
-    @Autowired
-    public CategoryApiController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoryById(@Valid @PathVariable Long id) {

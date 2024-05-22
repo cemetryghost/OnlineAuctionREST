@@ -13,6 +13,5 @@ public interface BidService {
     void deleteBid(Long id);
     List<BidDTO> getBidsByLotId(Long lotId);
     List<BidDTO> getMyBidsWithLotDetails();
-
 }
 

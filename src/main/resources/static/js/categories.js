@@ -2,8 +2,8 @@ $(document).ready(function() {
 
     function resetModal() {
         hideErrorMessages();
-        $('#addNameCategory').val(''); // Сбрасываем значение поля ввода
-        $('#editNameCategory').val(''); // Сбрасываем значение поля ввода
+        $('#addNameCategory').val('');
+        $('#editNameCategory').val('');
     }
 
     function hideErrorMessages() {

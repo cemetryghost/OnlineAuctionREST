@@ -15,13 +15,14 @@ import com.onlineauction.OnlineAuction.repository.CategoryRepository;
 import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.LotService;
-import com.onlineauction.OnlineAuction.specification.LotSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.onlineauction.OnlineAuction.specification.LotFindFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,7 +32,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 @Transactional
+@RequiredArgsConstructor
 public class LotServiceImpl implements LotService {
 
     private final LotRepository lotRepository;
@@ -41,17 +44,6 @@ public class LotServiceImpl implements LotService {
     private final MappingContext mappingContext;
     private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
     private final BidRepository bidRepository;
-
-    @Autowired
-    public LotServiceImpl(LotRepository lotRepository, LotMapper lotMapper, CategoryRepository categoryRepository, UserRepository userRepository, MappingContext mappingContext, CustomUserDetailsServiceImpl customUserDetailsServiceImpl, BidRepository bidRepository) {
-        this.lotRepository = lotRepository;
-        this.lotMapper = lotMapper;
-        this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
-        this.mappingContext = mappingContext;
-        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
-        this.bidRepository = bidRepository;
-    }
 
     @Override
     public void checkAndUpdateLotStatusDateClosing() {
@@ -82,12 +74,12 @@ public class LotServiceImpl implements LotService {
 
     @Override
     public List<LotDTO> searchActiveLots(Long categoryId, String keyword) {
-        Specification<Lot> spec = Specification.where(LotSpecification.isActive());
+        Specification<Lot> spec = Specification.where(LotFindFilter.isActive());
         if (categoryId != null) {
-            spec = spec.and(LotSpecification.hasCategory(categoryId));
+            spec = spec.and(LotFindFilter.hasCategory(categoryId));
         }
         if (keyword != null && !keyword.isEmpty()) {
-            spec = spec.and(LotSpecification.hasKeyword(keyword));
+            spec = spec.and(LotFindFilter.hasKeyword(keyword));
         }
         List<Lot> lots = lotRepository.findAll(spec);
         return lots.stream().map(lotMapper::lotToLotDTO).collect(Collectors.toList());

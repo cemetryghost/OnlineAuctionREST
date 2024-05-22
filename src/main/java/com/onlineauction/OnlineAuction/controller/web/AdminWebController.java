@@ -1,9 +1,12 @@
 package com.onlineauction.OnlineAuction.controller.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class AdminWebController {
@@ -44,7 +47,3 @@ public class AdminWebController {
         return "/page_admin/accounts";
     }
 }
-
-
-
-

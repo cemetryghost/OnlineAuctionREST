@@ -4,7 +4,7 @@ import com.onlineauction.OnlineAuction.entity.Lot;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import org.springframework.data.jpa.domain.Specification;
 
-public class LotSpecification {
+public class LotFindFilter {
 
     public static Specification<Lot> hasKeyword(String keyword) {
         return (root, query, criteriaBuilder) -> {

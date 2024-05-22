@@ -112,10 +112,11 @@ async function loadLots(statusLot = '', role = userRole) {
 
 
 function createLotCard(lot) {
+    const imageUrl = lot.hasImage ? `/lots/${lot.id}/image?timestamp=${new Date().getTime()}` : 'https://localhost:8443/placeholder.jpg';
     const card = $(`
         <div class="col-md-4">
             <div class="card" data-lot-id="${lot.id}">
-                <img src="${lot.hasImage ? `/lots/${lot.id}/image` : 'placeholder.jpg'}" class="card-img-top" alt="Изображение лота">
+                <img src="${imageUrl}" class="card-img-top" alt="Изображение лота" onerror="this.onerror=null;this.src='https://localhost:8443/placeholder.jpg';">
                 <div class="card-body">
                     <h5 class="card-title">${lot.nameLots}</h5>
                     <p class="card-text">${lot.descriptionLots}</p>
@@ -617,9 +618,11 @@ function updateLotCard(updatedLot, userBid = null, pageType = '') {
                     break;
             }
         });
-        card.find('.card-img-top').attr('src', updatedLot.hasImage ? `/lots/${updatedLot.id}/image` : 'placeholder.jpg');
+        const imageUrl = updatedLot.hasImage ? `/lots/${updatedLot.id}/image?timestamp=${new Date().getTime()}` : 'placeholder.jpg';
+        card.find('.card-img-top').attr('src', imageUrl);
     }
 }
+
 
 
 function createUserBidCard(bid, pageType = 'userBids') {

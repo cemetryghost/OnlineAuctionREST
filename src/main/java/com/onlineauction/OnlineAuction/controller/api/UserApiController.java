@@ -2,7 +2,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.onlineauction.OnlineAuction.dto.UserDTO;
 import com.onlineauction.OnlineAuction.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -14,14 +14,10 @@ import java.util.List;
 @RequestMapping("/user")
 @Validated
 @PreAuthorize("hasRole('ROLE_ADMIN')")
+@RequiredArgsConstructor
 public class UserApiController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserApiController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public List<UserDTO> getAllUsers() {

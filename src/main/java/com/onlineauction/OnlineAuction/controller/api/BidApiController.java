@@ -2,7 +2,7 @@ package com.onlineauction.OnlineAuction.controller.api;
 
 import com.onlineauction.OnlineAuction.dto.BidDTO;
 import com.onlineauction.OnlineAuction.service.BidService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/bids")
 @Validated
+@RequiredArgsConstructor
 public class BidApiController {
 
     private final BidService bidService;
-
-    @Autowired
-    public BidApiController(BidService bidService) {
-        this.bidService = bidService;
-    }
 
     @GetMapping
     public ResponseEntity<List<BidDTO>> getAllBids() {

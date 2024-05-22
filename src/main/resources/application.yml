@@ -1,0 +1,44 @@
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: Silich312
+    key-store-type: PKCS12
+    key-alias: my-ssl-cert
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
+
+spring:
+  application:
+    name: OnlineAuction
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auction
+    username: postgres
+    password: 6778
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: matvey.marusik@gmail.com
+    password: llmz ysxy gvcy qzdf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    from: Online Auction
+
+jwt:
+  secret: 52gBb9PACl8nJa79J7Rz+Ti4gCGWogrlxxjN16hCESloaZc3hd8s0CDKwiC5ZZo1lT/sdzoQFtuGz6w6+JzOgA==
+  accessExpiration: 3600000
+  refreshExpiration: 1728000000

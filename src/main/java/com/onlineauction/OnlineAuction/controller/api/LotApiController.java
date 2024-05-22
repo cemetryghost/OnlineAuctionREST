@@ -5,7 +5,7 @@ import com.onlineauction.OnlineAuction.dto.LotDTO;
 import com.onlineauction.OnlineAuction.enums.StatusLot;
 import com.onlineauction.OnlineAuction.service.LotService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,16 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/lots")
 @Validated
+@RequiredArgsConstructor
 public class LotApiController {
 
     private final LotService lotService;
     private final ObjectMapper objectMapper;
-
-    @Autowired
-    public LotApiController(LotService lotService, ObjectMapper objectMapper) {
-        this.lotService = lotService;
-        this.objectMapper = objectMapper;
-    }
 
     @GetMapping
     public ResponseEntity<List<LotDTO>> getAllLots(@RequestParam(required = false) StatusLot statusLot) {

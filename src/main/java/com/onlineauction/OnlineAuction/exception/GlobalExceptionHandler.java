@@ -1,10 +1,10 @@
-package com.onlineauction.OnlineAuction.advice;
+package com.onlineauction.OnlineAuction.exception;
 
-import com.onlineauction.OnlineAuction.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> handleIOException(IOException ex) {
+    public ResponseEntity<String> handleIOException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка ввода-вывода при обработке файла");
     }
 
@@ -61,13 +61,23 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<?> handleUsernameNotFoundException() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("Пользователь не найден"));
+    public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", ex.getMessage()));
     }
 
-    @ExceptionHandler(UserNotConfirmedException.class)
-    public ResponseEntity<?> handleUserNotConfirmedException() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse("Вы не подтвердили почту"));
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<?> handleLockedException(LockedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<?> handleJwtAuthenticationException(JwtAuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse(e.getMessage()));
     }
 
     private Map<String, String> errorResponse(String errorMessage) {

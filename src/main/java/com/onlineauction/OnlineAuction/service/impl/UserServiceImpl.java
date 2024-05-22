@@ -8,10 +8,11 @@ import com.onlineauction.OnlineAuction.exception.UserException;
 import com.onlineauction.OnlineAuction.mapper.UserMapper;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -20,7 +21,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 @Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -32,25 +35,12 @@ public class UserServiceImpl implements UserService {
     private final VerificationCodeService verificationCodeService;
     private final TemporaryUserStorageService temporaryUserStorageService;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, CustomUserDetailsServiceImpl customUserDetailsServiceImpl, LotService lotService, EmailService emailService, VerificationCodeService verificationCodeService, TemporaryUserStorageService temporaryUserStorageService) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
-        this.lotService = lotService;
-        this.emailService = emailService;
-        this.verificationCodeService = verificationCodeService;
-        this.temporaryUserStorageService = temporaryUserStorageService;
-    }
-
     @Override
     public UserDTO registerNewUser(UserDTO userDTO) {
         userDTO.setStatus(Status.ACTIVE);
         UserAccounts user = userMapper.userDTOToUser(userDTO);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         UserAccounts savedUser = userRepository.save(user);
-        customUserDetailsServiceImpl.updateUserDetails(savedUser);
         return userMapper.userToUserDTO(savedUser);
     }
 

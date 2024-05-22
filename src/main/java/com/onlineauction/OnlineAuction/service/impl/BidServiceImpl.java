@@ -13,7 +13,7 @@ import com.onlineauction.OnlineAuction.repository.LotRepository;
 import com.onlineauction.OnlineAuction.repository.UserRepository;
 import com.onlineauction.OnlineAuction.service.BidService;
 import com.onlineauction.OnlineAuction.service.LotService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Validated
 @Transactional
+@RequiredArgsConstructor
 public class BidServiceImpl implements BidService {
 
     private final BidRepository bidRepository;
@@ -34,17 +35,6 @@ public class BidServiceImpl implements BidService {
     private final LotService lotService;
     private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
-    @Autowired
-    public BidServiceImpl(BidRepository bidRepository, LotRepository lotRepository,
-                          UserRepository userRepository, BidMapper bidMapper, LotService lotService, CustomUserDetailsServiceImpl customUserDetailsServiceImpl) {
-        this.bidRepository = bidRepository;
-        this.lotRepository = lotRepository;
-        this.userRepository = userRepository;
-        this.bidMapper = bidMapper;
-        this.lotService = lotService;
-        this.customUserDetailsServiceImpl = customUserDetailsServiceImpl;
-    }
-    
     @Override
     public List<BidDTO> getAllBids() {
         return mapBidListToDTOList(bidRepository.findAll());
