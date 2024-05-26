@@ -219,7 +219,7 @@ function generateBuyerFooterButtons(lot, userBid) {
 function generateLotDetailsHtml(lot, categoryName) {
     let buyerInfo = "";
     if (lot.buyerDetails) {
-        const buyerType = lot.statusLots === 'COMPLETED_LOT' ? "Победитель" : "Текущий покупатель:";
+        const buyerType = lot.statusLots === 'COMPLETED_LOT' ? "Победитель:" : "Текущий покупатель:";
         buyerInfo = `
             <p><strong>${buyerType}</strong></p>
             <p class="buyer-margin"><strong>Имя и фамилия:</strong> ${lot.buyerDetails.name} ${lot.buyerDetails.surname}</p>
